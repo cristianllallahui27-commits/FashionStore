@@ -1,0 +1,93 @@
+﻿@model FashionStore.Domain.DTOs.ClienteDTO
+
+@{
+    ViewData["Title"] = "Nuevo Cliente";
+}
+
+<h1>Nuevo Cliente</h1>
+
+<hr />
+
+<div class="row">
+
+    <div class="col-md-6">
+
+        <form asp-action="Create">
+
+            <div asp-validation-summary="ModelOnly"
+                 class="text-danger">
+            </div>
+
+            <div class="mb-3">
+
+                <label asp-for="NombreCompleto"
+                       class="form-label">
+                </label>
+
+                <input asp-for="NombreCompleto"
+                       class="form-control" />
+
+                <span asp-validation-for="NombreCompleto"
+                      class="text-danger">
+                </span>
+
+            </div>
+
+            <div class="mb-3">
+
+                <label asp-for="DNI"
+                       class="form-label">
+                </label>
+
+                <input asp-for="DNI"
+                       class="form-control" />
+
+                <span asp-validation-for="DNI"
+                      class="text-danger">
+                </span>
+
+            </div>
+
+            <div class="mb-3">
+
+                <label asp-for="Telefono"
+                       class="form-label">
+                </label>
+
+                <input asp-for="Telefono"
+                       class="form-control" />
+
+            </div>
+
+            <div class="mb-3">
+
+                <label asp-for="Direccion"
+                       class="form-label">
+                </label>
+
+                <input asp-for="Direccion"
+                       class="form-control" />
+
+            </div>
+
+            <button type="submit"
+                    class="btn btn-success">
+                Guardar
+            </button>
+
+            <a asp-action="Index"
+               class="btn btn-secondary">
+                Volver
+            </a>
+
+        </form>
+
+    </div>
+
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

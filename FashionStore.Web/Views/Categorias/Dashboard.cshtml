@@ -1,0 +1,277 @@
+@model FashionStore.Web.ViewModels.DashboardViewModel
+
+@{
+    ViewData["Title"] = "Dashboard Categorías";
+}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet" />
+
+<link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+
+    body {
+        background: linear-gradient(rgba(0,0,0,.7), rgba(0,0,0,.7)), url('https://images.unsplash.com/photo-1441986300917-64674bd600d8');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        min-height: 100vh;
+    }
+
+    .glass {
+        background: rgba(255,255,255,0.12);
+        backdrop-filter: blur(10px);
+        border-radius: 25px;
+        color: white;
+        border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .card-modern {
+        border: none;
+        border-radius: 20px;
+        transition: .3s;
+    }
+
+        .card-modern:hover {
+            transform: translateY(-5px);
+        }
+
+    .title-dashboard {
+        font-size: 40px;
+        font-weight: bold;
+    }
+
+</style>
+
+<div class="container py-5">
+
+    <div class="glass p-5 shadow-lg">
+
+        <div class="d-flex justify-content-between align-items-center mb-5">
+
+            <div>
+
+                <h1 class="title-dashboard">
+
+                    <i class="bi bi-tags-fill"></i>
+
+                    Dashboard Categorías
+
+                </h1>
+
+                <p class="text-light">
+
+                    Panel administrativo Fashion Store
+
+                </p>
+
+            </div>
+
+            <div>
+
+                <a asp-controller="Categorias"
+                   asp-action="Index"
+                   class="btn btn-light btn-lg">
+
+                    <i class="bi bi-list"></i>
+
+                    Ver Categorías
+
+                </a>
+
+                <a asp-controller="Home"
+                   asp-action="Index"
+                   class="btn btn-outline-light ms-3 btn-lg">
+
+                    <i class="bi bi-house"></i>
+
+                    Inicio
+
+                </a>
+
+            </div>
+
+        </div>
+
+        <!-- TARJETAS -->
+
+        <div class="row g-4">
+
+            <div class="col-md-4">
+
+                <div class="card bg-primary text-white p-4 shadow card-modern">
+
+                    <div class="d-flex justify-content-between">
+
+                        <div>
+
+                            <h5>Total Categorías</h5>
+
+                            <h1>@Model.TotalCategorias</h1>
+
+                        </div>
+
+                        <i class="bi bi-tags-fill"
+                           style="font-size:60px;"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-md-4">
+
+                <div class="card bg-success text-white p-4 shadow card-modern">
+
+                    <div class="d-flex justify-content-between">
+
+                        <div>
+
+                            <h5>Total Prendas</h5>
+
+                            <h1>@Model.TotalPrendas</h1>
+
+                        </div>
+
+                        <i class="bi bi-bag-fill"
+                           style="font-size:60px;"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-md-4">
+
+                <div class="card bg-danger text-white p-4 shadow card-modern">
+
+                    <div class="d-flex justify-content-between">
+
+                        <div>
+
+                            <h5>Estado</h5>
+
+                            <h2>Activo</h2>
+
+                        </div>
+
+                        <i class="bi bi-graph-up-arrow"
+                           style="font-size:60px;"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- GRAFICO -->
+
+        <div class="row mt-5">
+
+            <div class="col-md-12">
+
+                <div class="card bg-dark p-4 shadow-lg">
+
+                    <h3 class="text-white mb-4">
+
+                        <i class="bi bi-bar-chart-fill"></i>
+
+                        Prendas por Categoría
+
+                    </h3>
+
+                    <canvas id="categoriasChart"></canvas>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+    const ctx =
+        document.getElementById('categoriasChart');
+
+    new Chart(ctx, {
+
+        type: 'bar',
+
+        data: {
+
+            labels:
+            @Html.Raw(Model.PrendasByCategoryLabelsJson ?? "[]"),
+
+            datasets: [{
+
+                label: 'Cantidad de prendas',
+
+                data:
+                @Html.Raw(Model.PrendasByCategoryDataJson ?? "[]"),
+
+                backgroundColor: [
+
+                    '#0d6efd',
+                    '#198754',
+                    '#dc3545',
+                    '#ffc107',
+                    '#6f42c1'
+
+                ],
+
+                borderRadius: 10
+
+            }]
+        },
+
+        options: {
+
+            responsive: true,
+
+            plugins: {
+
+                legend: {
+
+                    labels: {
+
+                        color: 'white'
+                    }
+                }
+            },
+
+            scales: {
+
+                x: {
+
+                    ticks: {
+
+                        color: 'white'
+                    }
+                },
+
+                y: {
+
+                    ticks: {
+
+                        color: 'white'
+                    },
+
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+</script>

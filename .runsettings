@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+  <DataCollectionRunSettings>
+	<DataCollectors>
+	  <DataCollector friendlyName="XPlat code coverage">
+		<Configuration>
+		  <Format>cobertura</Format>
+		  <!-- Coverage for Domain, Infrastructure, Web (excluding tests and generated files) -->
+		  <IncludeTestAssembly>false</IncludeTestAssembly>
+		  <Exclude>
+			<!-- Exclude tests -->
+			<ExcludeFromCodeCoverage>^FashionStore\\.Tests.*</ExcludeFromCodeCoverage>
+			<!-- Exclude Migrations -->
+			<ExcludeFromCodeCoverage>^.*\\Migrations\\.*</ExcludeFromCodeCoverage>
+			<ExcludeFromCodeCoverage>^.*\\(Migrations|Snapshot).*\\.cs$</ExcludeFromCodeCoverage>
+			<!-- Exclude designer and generated files -->
+			<ExcludeFromCodeCoverage>^.*\\.Designer\\.cs$</ExcludeFromCodeCoverage>
+			<ExcludeFromCodeCoverage>^.*GlobalUsings\\.g\\.cs$</ExcludeFromCodeCoverage>
+			<ExcludeFromCodeCoverage>^.*AssemblyInfo\\.cs$</ExcludeFromCodeCoverage>
+			<ExcludeFromCodeCoverage>^.*\\.g\\.cs$</ExcludeFromCodeCoverage>
+			<!-- Exclude *.AssemblyAttributes.cs -->
+			<ExcludeFromCodeCoverage>^.*AssemblyAttributes\\.cs$</ExcludeFromCodeCoverage>
+			<!-- Exclude obj directory entirely -->
+			<ExcludeFromCodeCoverage>^.*\\\\obj\\\\.*</ExcludeFromCodeCoverage>
+		  </Exclude>
+		</Configuration>
+	  </DataCollector>
+	</DataCollectors>
+  </DataCollectionRunSettings>
+</RunSettings>

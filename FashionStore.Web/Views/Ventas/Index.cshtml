@@ -1,0 +1,29 @@
+@model IEnumerable<FashionStore.Domain.Entities.Venta>
+
+@{
+    ViewData["Title"] = "Ventas";
+}
+
+<h1 class="mb-4">Ventas</h1>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Fecha</th>
+            <th>Cliente</th>
+            <th>Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var v in Model)
+        {
+            <tr>
+                <td>@v.Id</td>
+                <td>@v.Fecha.ToString("g")</td>
+                <td>@v.Cliente?.NombreCompleto</td>
+                <td>@v.Total</td>
+            </tr>
+        }
+    </tbody>
+</table>

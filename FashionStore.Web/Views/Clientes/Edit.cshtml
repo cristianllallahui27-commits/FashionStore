@@ -1,0 +1,77 @@
+﻿@model FashionStore.Domain.DTOs.ClienteDTO
+
+@{
+    ViewData["Title"] = "Editar Cliente";
+}
+
+<h1>Editar Cliente</h1>
+
+<hr />
+
+<div class="row">
+
+    <div class="col-md-6">
+
+        <form asp-action="Edit">
+
+            <input type="hidden" asp-for="Id" />
+
+            <div class="mb-3">
+
+                <label asp-for="NombreCompleto"
+                       class="form-label">
+                </label>
+
+                <input asp-for="NombreCompleto"
+                       class="form-control" />
+
+            </div>
+
+            <div class="mb-3">
+
+                <label asp-for="DNI"
+                       class="form-label">
+                </label>
+
+                <input asp-for="DNI"
+                       class="form-control" />
+
+            </div>
+
+            <div class="mb-3">
+
+                <label asp-for="Telefono"
+                       class="form-label">
+                </label>
+
+                <input asp-for="Telefono"
+                       class="form-control" />
+
+            </div>
+
+            <div class="mb-3">
+
+                <label asp-for="Direccion"
+                       class="form-label">
+                </label>
+
+                <input asp-for="Direccion"
+                       class="form-control" />
+
+            </div>
+
+            <button type="submit"
+                    class="btn btn-warning">
+                Actualizar
+            </button>
+
+            <a asp-action="Index"
+               class="btn btn-secondary">
+                Volver
+            </a>
+
+        </form>
+
+    </div>
+
+</div>

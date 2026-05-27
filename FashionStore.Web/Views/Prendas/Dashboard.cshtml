@@ -1,0 +1,320 @@
+@{
+    ViewData["Title"] = "Dashboard Prendas";
+}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet">
+
+<link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<style>
+
+    body {
+        background: linear-gradient(135deg, #141e30, #243b55);
+        min-height: 100vh;
+        color: white;
+    }
+
+    .dashboard-card {
+        border: none;
+        border-radius: 25px;
+        backdrop-filter: blur(12px);
+        background: rgba(255,255,255,0.08);
+        color: white;
+        transition: 0.4s;
+    }
+
+        .dashboard-card:hover {
+            transform: translateY(-8px);
+        }
+
+    .dashboard-title {
+        font-weight: bold;
+        font-size: 38px;
+    }
+
+    .icon-big {
+        font-size: 55px;
+        opacity: 0.7;
+    }
+
+    .btn-dashboard {
+        border-radius: 15px;
+        padding: 14px;
+        font-size: 18px;
+        font-weight: bold;
+        transition: 0.3s;
+    }
+
+        .btn-dashboard:hover {
+            transform: scale(1.03);
+        }
+
+</style>
+
+<div class="container mt-4">
+
+    <h1 class="dashboard-title mb-5">
+
+        <i class="bi bi-bag-fill"></i>
+        Dashboard de Prendas
+
+    </h1>
+
+    <div class="row g-4">
+
+        <div class="col-md-4">
+
+            <div class="card dashboard-card shadow p-4">
+
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <div>
+
+                        <h5>Total de prendas</h5>
+
+                        <h1 id="totalPrendas"></h1>
+
+                    </div>
+
+                    <i class="bi bi-bag icon-big"></i>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="card dashboard-card shadow p-4">
+
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <div>
+
+                        <h5>Total stock</h5>
+
+                        <h1 id="totalStock"></h1>
+
+                    </div>
+
+                    <i class="bi bi-box-seam icon-big"></i>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="card dashboard-card shadow p-4">
+
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <div>
+
+                        <h5>Categorías usadas</h5>
+
+                        <h1 id="totalCategorias"></h1>
+
+                    </div>
+
+                    <i class="bi bi-tags icon-big"></i>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- GRAFICOS -->
+
+    <div class="row mt-5 g-4">
+
+        <div class="col-md-8">
+
+            <div class="card dashboard-card shadow p-4">
+
+                <h4 class="mb-4">
+
+                    <i class="bi bi-bar-chart-fill"></i>
+                    Prendas por categoría
+
+                </h4>
+
+                <canvas id="prendasChart"></canvas>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="card dashboard-card shadow p-4">
+
+                <h4 class="mb-4">
+
+                    <i class="bi bi-lightning-fill"></i>
+                    Accesos rápidos
+
+                </h4>
+
+                <div class="d-grid gap-3">
+
+                    <a asp-controller="Prendas"
+                       asp-action="Index"
+                       class="btn btn-success btn-dashboard">
+
+                        <i class="bi bi-list"></i>
+                        Ver prendas
+
+                    </a>
+
+                    <a asp-controller="Prendas"
+                       asp-action="Create"
+                       class="btn btn-primary btn-dashboard">
+
+                        <i class="bi bi-plus-circle"></i>
+                        Nueva prenda
+
+                    </a>
+
+                    <a asp-controller="Categorias"
+                       asp-action="Dashboard"
+                       class="btn btn-warning btn-dashboard text-white">
+
+                        <i class="bi bi-tags"></i>
+                        Dashboard categorías
+
+                    </a>
+
+                    <a asp-controller="Home"
+                       asp-action="Index"
+                       class="btn btn-danger btn-dashboard">
+
+                        <i class="bi bi-house"></i>
+                        Inicio
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+    ```
+
+</div>
+
+@section Scripts {
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+
+        const labels =
+            @Html.Raw(ViewData["Labels"]);
+
+        const counts =
+            @Html.Raw(ViewData["Counts"]);
+
+        const stocks =
+            @Html.Raw(ViewData["Stocks"]);
+
+        // TOTALES
+
+        document.getElementById("totalPrendas")
+            .innerText =
+            counts.reduce((a,b)=>a+b,0);
+
+        document.getElementById("totalStock")
+            .innerText =
+            stocks.reduce((a,b)=>a+b,0);
+
+        document.getElementById("totalCategorias")
+            .innerText =
+            labels.length;
+
+        // GRAFICO
+
+        const ctx =
+            document.getElementById('prendasChart');
+
+        new Chart(ctx, {
+
+            type: 'bar',
+
+            data: {
+
+                labels: labels,
+
+                datasets: [{
+
+                    label: 'Prendas',
+
+                    data: counts,
+
+                    borderWidth: 2,
+
+                    borderRadius: 10,
+
+                    backgroundColor: [
+                        '#0d6efd',
+                        '#198754',
+                        '#dc3545',
+                        '#ffc107',
+                        '#6610f2',
+                        '#20c997'
+                    ]
+
+                }]
+
+            },
+
+            options: {
+
+                responsive: true,
+
+                plugins: {
+
+                    legend: {
+
+                        labels: {
+                            color: 'white'
+                        }
+
+                    }
+
+                },
+
+                scales: {
+
+                    x: {
+                        ticks: {
+                            color: 'white'
+                        }
+                    },
+
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            color: 'white'
+                        }
+                    }
+
+                }
+
+            }
+
+        });
+
+    </script>
+
+}

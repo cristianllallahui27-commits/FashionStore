@@ -1,0 +1,41 @@
+﻿@model FashionStore.Domain.DTOs.CategoriaDTO
+
+@{
+    ViewData["Title"] = "Detalle Categoría";
+}
+
+<h1 class="mt-4">Detalle Categoría</h1>
+
+<hr />
+
+<dl class="row">
+
+    <dt class="col-sm-2">
+        Nombre
+    </dt>
+
+    <dd class="col-sm-10">
+        @Model.Nombre
+    </dd>
+
+    <dt class="col-sm-2">
+        Descripción
+    </dt>
+
+    <dd class="col-sm-10">
+        @Model.Descripcion
+    </dd>
+
+</dl>
+
+<a asp-action="Edit"
+   asp-route-id="@Model.Id"
+   class="btn btn-warning">
+
+    Editar
+</a>
+
+<a asp-action="Index"
+   class="btn btn-secondary">
+    Volver
+</a>

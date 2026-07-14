@@ -1,9 +1,10 @@
-# Archivos de Visual Studio
 .vs/
 bin/
 obj/
+*.db
+*.sqlite
+logs/
+coveragereport/
 *.user
 *.suo
-*.userosscache
-*.sln.docstates
-TestResults/
+.vscode/

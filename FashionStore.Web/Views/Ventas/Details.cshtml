@@ -1,0 +1,197 @@
+@model FashionStore.Web.ViewModels.VentaDetalleViewModel
+
+@{
+    ViewData["Title"] = $"Venta #{Model.Id:D4}";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<div class="container py-4">
+    <!-- Action Bar -->
+    <div class="d-flex justify-content-between align-items-center mb-4 d-print-none">
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i>Volver a Ventas
+        </a>
+        <div class="d-flex gap-2">
+            <a asp-action="Create" class="btn btn-primary">
+                <i class="fas fa-plus me-1"></i>Nueva Venta
+            </a>
+            <button onclick="window.print()" class="btn btn-outline-primary">
+                <i class="fas fa-print me-1"></i>Imprimir
+            </button>
+            <a asp-action="Imprimir" asp-route-id="@Model.Id" target="_blank" class="btn btn-outline-danger">
+                <i class="fas fa-file-pdf me-1"></i>Ver PDF / Ticket
+            </a>
+            <a asp-action="DescargarExcel" asp-route-id="@Model.Id" class="btn btn-outline-success">
+                <i class="fas fa-file-excel me-1"></i>Excel
+            </a>
+        </div>
+    </div>
+
+    <!-- Printable Receipt Card -->
+    <div class="card border-0 shadow receipt-card p-4">
+        <div class="card-body">
+            <!-- Receipt Header -->
+            <div class="row align-items-center pb-4 border-bottom mb-4">
+                <div class="col-md-6 col-sm-12 text-md-start text-center mb-3 mb-md-0">
+                    @if (!string.IsNullOrEmpty(Model.RutaLogo))
+                    {
+                        <img src="@Model.RutaLogo" alt="Logo" class="img-fluid mb-2" style="max-height: 60px;">
+                    }
+                    else
+                    {
+                        <h2 class="fw-bold text-primary mb-0"><i class="fas fa-store me-2"></i>@Model.NombreTienda</h2>
+                    }
+                    <div class="text-muted small mt-1">
+                        @if (!string.IsNullOrEmpty(Model.DireccionTienda))
+                        {
+                            <div><i class="fas fa-map-marker-alt me-1"></i>@Model.DireccionTienda</div>
+                        }
+                        @if (!string.IsNullOrEmpty(Model.TelefonoTienda))
+                        {
+                            <span><i class="fas fa-phone-alt me-1"></i>@Model.TelefonoTienda</span>
+                        }
+                        @if (!string.IsNullOrEmpty(Model.CorreoTienda))
+                        {
+                            <span class="ms-3"><i class="fas fa-envelope me-1"></i>@Model.CorreoTienda</span>
+                        }
+                    </div>
+                </div>
+                <div class="col-md-6 col-sm-12 text-md-end text-center">
+                    <span class="badge bg-primary fs-6 mb-2">COMPROBANTE DE VENTA</span>
+                    <h3 class="fw-bold text-dark mb-1">Venta #@Model.Id.ToString("D4")</h3>
+                    <div class="text-muted"><i class="fas fa-calendar-alt me-1"></i>@Model.Fecha.ToString("dd/MM/yyyy hh:mm tt")</div>
+                </div>
+            </div>
+
+            <!-- Client & Vendedor Info -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <div class="p-3 bg-light rounded h-100">
+                        <h6 class="fw-bold text-muted mb-2 text-uppercase small">Datos del Cliente</h6>
+                        <h5 class="fw-bold mb-1">@Model.ClienteNombre</h5>
+                        <div class="text-muted small">DNI: @Model.ClienteDNI</div>
+                        @if (!string.IsNullOrEmpty(Model.ClienteTelefono) && Model.ClienteTelefono != "-")
+                        {
+                            <div class="text-muted small">Teléfono: @Model.ClienteTelefono</div>
+                        }
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-3 bg-light rounded h-100">
+                        <h6 class="fw-bold text-muted mb-2 text-uppercase small">Información de Pago</h6>
+                        <div class="mb-1">
+                            <span class="text-muted small">Método de Pago:</span>
+                            <span class="badge bg-info text-white ms-1">@Model.MetodoPagoNombre</span>
+                        </div>
+                        <div>
+                            <span class="text-muted small">Atendido por:</span>
+                            <span class="fw-semibold ms-1">@Model.VendedorNombre</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Items Table -->
+            <div class="table-responsive mb-4">
+                <table class="table table-bordered align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Código</th>
+                            <th>Descripción / Producto</th>
+                            <th class="text-center">Talla / Color</th>
+                            <th class="text-end">Precio Unit.</th>
+                            <th class="text-center">Cant.</th>
+                            <th class="text-end">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Detalles)
+                        {
+                            <tr>
+                                <td class="text-muted small font-monospace">@(string.IsNullOrEmpty(item.CodigoBarra) ? "-" : item.CodigoBarra)</td>
+                                <td class="fw-bold text-dark">@item.NombrePrenda</td>
+                                <td class="text-center">@item.Talla / @item.Color</td>
+                                <td class="text-end">S/. @item.PrecioUnitario.ToString("F2")</td>
+                                <td class="text-center fw-semibold">@item.Cantidad</td>
+                                <td class="text-end fw-bold text-dark">S/. @item.Subtotal.ToString("F2")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Summary / Totals block -->
+            <div class="row justify-content-end">
+                <div class="col-lg-4 col-md-6 col-sm-12">
+                    <div class="border rounded p-3 bg-light">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Subtotal:</span>
+                            <span class="fw-semibold">S/. @Model.Subtotal.ToString("F2")</span>
+                        </div>
+                        @if (Model.Descuento > 0)
+                        {
+                            <div class="d-flex justify-content-between mb-3">
+                                <span class="text-muted">
+                                    Descuento
+                                    @if (!string.IsNullOrEmpty(Model.DescuentoNombre))
+                                    {
+                                        <span class="badge bg-warning text-dark ms-1">@Model.DescuentoNombre</span>
+                                    }
+                                    :
+                                </span>
+                                <span class="fw-semibold text-danger">- S/. @Model.Descuento.ToString("F2")</span>
+                            </div>
+                        }
+                        <hr>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="fw-bold text-dark">TOTAL PAGADO:</span>
+                            <span class="fw-bold fs-4 text-primary">S/. @Model.Total.ToString("F2")</span>
+                        </div>
+
+                        @if (Model.EsEfectivo && Model.MontoRecibido.HasValue)
+                        {
+                            <div class="border-top pt-2 mt-2">
+                                <div class="d-flex justify-content-between mb-1 small">
+                                    <span class="text-muted">Monto Recibido:</span>
+                                    <span class="fw-semibold">S/. @Model.MontoRecibido.Value.ToString("F2")</span>
+                                </div>
+                                <div class="d-flex justify-content-between text-success fw-bold">
+                                    <span>Vuelto Entregado:</span>
+                                    <span>S/. @(Model.Vuelto?.ToString("F2") ?? "0.00")</span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Notes -->
+            <div class="text-center mt-5 text-muted small pt-3 border-top">
+                <p class="mb-1 fw-semibold">¡Gracias por su compra en @Model.NombreTienda!</p>
+                <p class="mb-0">Conserve este comprobante para cualquier reclamo o cambio de prenda.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    @@media print {
+        body {
+            background: white !important;
+        }
+        .container {
+            width: 100% !important;
+            max-width: 100% !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+        .receipt-card {
+            box-shadow: none !important;
+            border: none !important;
+            padding: 0 !important;
+        }
+        .d-print-none {
+            display: none !important;
+        }
+    }
+</style>

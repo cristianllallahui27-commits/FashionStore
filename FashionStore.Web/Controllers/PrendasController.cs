@@ -2,120 +2,59 @@
 using FashionStore.Domain.DTOs;
 using FashionStore.Domain.Entities;
 using FashionStore.Domain.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FashionStore.Web.Controllers
 {
+    [Authorize(Roles = "Administrador")]
     public class PrendasController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IWebHostEnvironment _env;
+
+        private static readonly string[] _extensionesPermitidas = { ".jpg", ".jpeg", ".png", ".webp" };
+        private const long _maxImagenBytes = 5 * 1024 * 1024; // 5 MB
 
         public PrendasController(
             IUnitOfWork unitOfWork,
-            IMapper mapper)
+            IMapper mapper,
+            IWebHostEnvironment env)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _env = env;
         }
 
         // =====================================
-        // INDEX
+        // INDEX — todos los autenticados
         // =====================================
 
         public async Task<IActionResult> Index()
         {
-            var prendas =
-                await _unitOfWork.Prendas.GetAllAsync();
-
-            var prendasDTO =
-                _mapper.Map<IEnumerable<PrendaDTO>>(prendas);
-
+            var prendas = await _unitOfWork.Prendas.GetAllAsync();
+            var prendasDTO = _mapper.Map<IEnumerable<PrendaDTO>>(prendas);
             return View(prendasDTO);
         }
 
         // =====================================
-        // DETAILS
+        // DETAILS — todos los autenticados
         // =====================================
 
         public async Task<IActionResult> Details(int id)
         {
-            var prenda =
-                await _unitOfWork.Prendas.GetByIdAsync(id);
-
-            if (prenda == null)
-                return NotFound();
-
-            var prendaDTO =
-                _mapper.Map<PrendaDTO>(prenda);
-
+            var prenda = await _unitOfWork.Prendas.GetByIdAsync(id);
+            if (prenda == null) return NotFound();
+            var prendaDTO = _mapper.Map<PrendaDTO>(prenda);
             return View(prendaDTO);
         }
 
         // =====================================
-        // CREATE GET
+        // DASHBOARD — todos los autenticados
         // =====================================
 
-        public async Task<IActionResult> Create()
-        {
-            await CargarCategorias();
-
-            return View();
-        }
-
-        // =====================================
-        // CREATE POST
-        // =====================================
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(
-            PrendaDTO prendaDTO,
-            IFormFile imagenFile)
-        {
-            if (!ModelState.IsValid)
-            {
-                await CargarCategorias();
-
-                return View(prendaDTO);
-            }
-
-            var prenda =
-                _mapper.Map<Prenda>(prendaDTO);
-
-            // SUBIR IMAGEN
-
-            if (imagenFile != null &&
-                imagenFile.Length > 0)
-            {
-                var nombreArchivo =
-                    Guid.NewGuid().ToString()
-                    + Path.GetExtension(imagenFile.FileName);
-
-                var imagesFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
-
-                // Ensure the folder exists to avoid DirectoryNotFoundException in tests and runtime
-                Directory.CreateDirectory(imagesFolder);
-
-                var ruta = Path.Combine(imagesFolder, nombreArchivo);
-
-                using (var stream = new FileStream(ruta, FileMode.Create))
-                {
-                    await imagenFile.CopyToAsync(stream);
-                }
-
-                prenda.ImagenUrl = nombreArchivo;
-            }
-
-            await _unitOfWork.Prendas.AddAsync(prenda);
-
-            await _unitOfWork.CommitAsync();
-
-            return RedirectToAction(nameof(Index));
-        }
-
-        // DASHBOARD
         public async Task<IActionResult> Dashboard()
         {
             var prendas = await _unitOfWork.Prendas.GetAllAsync();
@@ -145,110 +84,175 @@ namespace FashionStore.Web.Controllers
         }
 
         // =====================================
-        // EDIT GET
+        // CREATE GET — solo Administrador
         // =====================================
 
-        public async Task<IActionResult> Edit(int id)
+        [Authorize(Roles = "Administrador")]
+        public async Task<IActionResult> Create()
         {
-            var prenda =
-                await _unitOfWork.Prendas.GetByIdAsync(id);
-
-            if (prenda == null)
-                return NotFound();
-
-            var prendaDTO =
-                _mapper.Map<PrendaDTO>(prenda);
-
             await CargarCategorias();
-
-            return View(prendaDTO);
+            return View();
         }
 
         // =====================================
-        // EDIT POST
+        // CREATE POST — solo Administrador
         // =====================================
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(
-            int id,
-            PrendaDTO prendaDTO)
+        [Authorize(Roles = "Administrador")]
+        public async Task<IActionResult> Create(PrendaDTO prendaDTO, IFormFile? imagenFile)
         {
-            if (id != prendaDTO.Id)
-                return NotFound();
-
             if (!ModelState.IsValid)
             {
                 await CargarCategorias();
-
                 return View(prendaDTO);
             }
 
-            var prenda =
-                _mapper.Map<Prenda>(prendaDTO);
+            var prenda = _mapper.Map<Prenda>(prendaDTO);
 
-            _unitOfWork.Prendas.Update(prenda);
+            if (imagenFile != null && imagenFile.Length > 0)
+            {
+                var resultado = await GuardarImagenAsync(imagenFile);
+                if (resultado.Error != null)
+                {
+                    ModelState.AddModelError("imagenFile", resultado.Error);
+                    await CargarCategorias();
+                    return View(prendaDTO);
+                }
+                prenda.ImagenUrl = resultado.NombreArchivo;
+            }
 
+            await _unitOfWork.Prendas.AddAsync(prenda);
             await _unitOfWork.CommitAsync();
 
+            TempData["Success"] = $"Prenda '{prenda.Nombre}' creada correctamente.";
             return RedirectToAction(nameof(Index));
         }
 
         // =====================================
-        // DELETE GET
+        // EDIT GET — solo Administrador
         // =====================================
 
-        public async Task<IActionResult> Delete(int id)
+        [Authorize(Roles = "Administrador")]
+        public async Task<IActionResult> Edit(int id)
         {
-            var prenda =
-                await _unitOfWork.Prendas.GetByIdAsync(id);
+            var prenda = await _unitOfWork.Prendas.GetByIdAsync(id);
+            if (prenda == null) return NotFound();
 
-            if (prenda == null)
-                return NotFound();
-
-            var prendaDTO =
-                _mapper.Map<PrendaDTO>(prenda);
-
+            var prendaDTO = _mapper.Map<PrendaDTO>(prenda);
+            await CargarCategorias();
             return View(prendaDTO);
         }
 
         // =====================================
-        // DELETE POST
+        // EDIT POST — solo Administrador
         // =====================================
 
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        [Authorize(Roles = "Administrador")]
+        public async Task<IActionResult> Edit(int id, PrendaDTO prendaDTO, IFormFile? imagenFile = null)
         {
-            var prenda =
-                await _unitOfWork.Prendas.GetByIdAsync(id);
+            if (id != prendaDTO.Id) return NotFound();
 
-            if (prenda == null)
-                return NotFound();
+            if (!ModelState.IsValid)
+            {
+                await CargarCategorias();
+                return View(prendaDTO);
+            }
 
-            _unitOfWork.Prendas.Delete(prenda);
+            var prenda = _mapper.Map<Prenda>(prendaDTO);
 
+            if (imagenFile != null && imagenFile.Length > 0)
+            {
+                var resultado = await GuardarImagenAsync(imagenFile);
+                if (resultado.Error != null)
+                {
+                    ModelState.AddModelError("imagenFile", resultado.Error);
+                    await CargarCategorias();
+                    return View(prendaDTO);
+                }
+                prenda.ImagenUrl = resultado.NombreArchivo;
+            }
+            else
+            {
+                // Conservar imagen existente si no se sube nueva
+                prenda.ImagenUrl = prendaDTO.ImagenUrl;
+            }
+
+            _unitOfWork.Prendas.Update(prenda);
             await _unitOfWork.CommitAsync();
 
+            TempData["Success"] = $"Prenda '{prenda.Nombre}' actualizada correctamente.";
             return RedirectToAction(nameof(Index));
         }
 
         // =====================================
-        // CARGAR CATEGORÍAS
+        // DELETE GET — solo Administrador
+        // =====================================
+
+        [Authorize(Roles = "Administrador")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var prenda = await _unitOfWork.Prendas.GetByIdAsync(id);
+            if (prenda == null) return NotFound();
+
+            var prendaDTO = _mapper.Map<PrendaDTO>(prenda);
+            return View(prendaDTO);
+        }
+
+        // =====================================
+        // DELETE POST — solo Administrador
+        // =====================================
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var prenda = await _unitOfWork.Prendas.GetByIdAsync(id);
+            if (prenda == null) return NotFound();
+
+            _unitOfWork.Prendas.Delete(prenda);
+            await _unitOfWork.CommitAsync();
+
+            TempData["Success"] = "Prenda eliminada correctamente.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        // =====================================
+        // HELPERS PRIVADOS
         // =====================================
 
         private async Task CargarCategorias()
         {
-            var categorias =
-                await _unitOfWork.Categorias.GetAllAsync();
-
+            var categorias = await _unitOfWork.Categorias.GetAllAsync();
             ViewBag.Categorias = categorias
-                .Select(c => new SelectListItem
-                {
-                    Value = c.Id.ToString(),
-                    Text = c.Nombre
-                })
+                .Select(c => new SelectListItem { Value = c.Id.ToString(), Text = c.Nombre })
                 .ToList();
+        }
+
+        private async Task<(string? NombreArchivo, string? Error)> GuardarImagenAsync(IFormFile file)
+        {
+            var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
+
+            if (!_extensionesPermitidas.Contains(ext))
+                return (null, $"Extensión no permitida. Use: {string.Join(", ", _extensionesPermitidas)}");
+
+            if (file.Length > _maxImagenBytes)
+                return (null, "La imagen supera el tamaño máximo de 5 MB.");
+
+            var carpeta = Path.Combine(_env.WebRootPath, "uploads", "productos");
+            Directory.CreateDirectory(carpeta);
+
+            var nombreArchivo = Guid.NewGuid().ToString() + ext;
+            var rutaCompleta = Path.Combine(carpeta, nombreArchivo);
+
+            using var stream = new FileStream(rutaCompleta, FileMode.Create);
+            await file.CopyToAsync(stream);
+
+            return (nombreArchivo, null);
         }
     }
 }

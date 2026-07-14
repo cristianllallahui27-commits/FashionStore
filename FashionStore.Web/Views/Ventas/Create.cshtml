@@ -1,0 +1,843 @@
+@model FashionStore.Web.ViewModels.VentaCreateViewModel
+
+@{
+    ViewData["Title"] = "Punto de Venta (POS)";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid py-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h1 class="fw-bold mb-0 text-primary fs-4"><i class="fas fa-cash-register me-2"></i>Punto de Venta (POS)</h1>
+            <p class="text-muted mb-0 small">Procesa una nueva venta</p>
+        </div>
+        <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-arrow-left me-1"></i>Volver
+        </a>
+    </div>
+
+    <div class="row g-3">
+            <!-- ===== COLUMNA IZQUIERDA (9 cols) ===== -->
+            <div class="col-lg-9">
+
+            <!-- Vendedor + Cliente -->
+            <div class="card border-0 shadow-sm mb-3">
+                <div class="card-body py-3">
+                    <div class="row g-3">
+                        <!-- VENDEDOR: Mostrar select o display según auto-detección -->
+                        @if (Model.VendedorAutoDetectado)
+                        {
+                            <!-- Mostrar como display (readonly) -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold small mb-1">
+                                    <i class="fas fa-user-tie me-1 text-success"></i>Vendedor (Autenticado)
+                                </label>
+                                <div class="input-group input-group-sm">
+                                    <input type="text" class="form-control" value="@Model.VendedorLogueadoNombre" readonly style="background-color: #e8f5e9;">
+                                    <span class="input-group-text bg-success text-white">
+                                        <i class="fas fa-check-circle"></i>
+                                    </span>
+                                </div>
+                                <!-- Hidden input para enviar VendedorId -->
+                                <input type="hidden" id="vendedor" value="@Model.VendedorLogueadoId">
+                                <small class="text-success d-block mt-1">
+                                    <i class="fas fa-info-circle me-1"></i>Vendedor detectado automáticamente desde tu sesión
+                                </small>
+                            </div>
+                        }
+                        else
+                        {
+                            <!-- Mostrar select para elegir -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold small mb-1">
+                                    <i class="fas fa-user-tie me-1 text-primary"></i>Vendedor *
+                                </label>
+                                <select class="form-select form-select-sm" id="vendedor" required>
+                                    <option value="">-- Selecciona vendedor --</option>
+                                    @foreach (var item in Model.Vendedores)
+                                    {
+                                        <option value="@item.Value" selected="@(Model.VendedorPreseleccionadoId.HasValue && Model.VendedorPreseleccionadoId.Value.ToString() == item.Value)">
+                                            @item.Text
+                                        </option>
+                                    }
+                                </select>
+                            </div>
+                        }
+                        
+                        <!-- CLIENTE -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small mb-1">
+                                <i class="fas fa-user me-1 text-primary"></i>Cliente *
+                            </label>
+                            <div class="input-group input-group-sm">
+                                <select class="form-select" id="cliente" required>
+                                    <option value="">-- Selecciona cliente --</option>
+                                    @foreach (var item in Model.Clientes)
+                                    {
+                                        <option value="@item.Value">@item.Text</option>
+                                    }
+                                </select>
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                    data-bs-target="#modalNuevoCliente" title="Nuevo cliente">
+                                    <i class="fas fa-user-plus"></i>
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary" id="btnClienteGenerico"
+                                    title="Cliente genérico">
+                                    <i class="fas fa-user-slash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Buscador de productos -->
+            <div class="card border-0 shadow-sm mb-3">
+                <div class="card-body py-3">
+                    <h6 class="fw-bold mb-3"><i class="fas fa-search text-primary me-2"></i>Catálogo de Productos</h6>
+
+                    <div class="row g-2 mb-3">
+                        <!-- Campo lector de barras -->
+                        <div class="col-md-5">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text bg-warning text-dark">
+                                    <i class="fas fa-barcode"></i>
+                                </span>
+                                <input type="text" class="form-control" id="campoCodBarra"
+                                       placeholder="Código de barras (Enter para agregar)..."
+                                       autocomplete="off">
+                            </div>
+                            <div id="alertaBarras" class="d-none"></div>
+                        </div>
+
+                        <!-- Campo búsqueda por nombre -->
+                        <div class="col-md-7">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text"><i class="fas fa-search text-muted"></i></span>
+                                <input type="text" class="form-control" id="buscarProductoInput"
+                                       placeholder="Filtrar por nombre del producto..." autocomplete="off">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lista completa de productos (Tabla fija con scroll) -->
+                    <div class="border rounded-3 overflow-hidden" style="max-height: 280px; overflow-y: auto;">
+                        <table class="table table-sm table-hover align-middle mb-0" style="font-size: 0.85rem;">
+                            <thead class="table-light sticky-top" style="z-index: 10;">
+                                <tr>
+                                    <th class="ps-2">Producto</th>
+                                    <th>Código</th>
+                                    <th>Categoría</th>
+                                    <th>Color/Talla</th>
+                                    <th class="text-end">Precio</th>
+                                    <th class="text-center">Stock</th>
+                                    <th class="text-center" style="width: 100px;">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaProductosDisponibles">
+                                <tr>
+                                    <td colspan="7" class="text-center py-4 text-muted">
+                                        <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
+                                        Cargando catálogo de productos...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Carrito -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-0">
+                    <div class="px-3 py-2 border-bottom d-flex justify-content-between align-items-center bg-primary text-white rounded-top">
+                        <h6 class="mb-0 fw-bold">
+                            <i class="fas fa-shopping-cart me-2"></i>Productos seleccionados por pagar
+                        </h6>
+                        <span class="badge bg-white text-primary rounded-pill" id="cartCount">0 productos</span>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="ps-3">Producto</th>
+                                    <th>Cód. Barras</th>
+                                    <th>Color/Talla</th>
+                                    <th class="text-end">Precio</th>
+                                    <th class="text-center" style="width:110px">Cantidad</th>
+                                    <th class="text-end">Subtotal</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="cartTableBody">
+                                <tr id="emptyCartRow">
+                                    <td colspan="7" class="text-center py-5 text-muted">
+                                        <i class="fas fa-cart-arrow-down fa-3x mb-2 d-block opacity-25"></i>
+                                        Usa el buscador o escanea un código de barras para agregar productos
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== COLUMNA DERECHA (3 cols) ===== -->
+        <div class="col-lg-3">
+            <div class="card border-0 shadow-sm sticky-top" style="top:70px;">
+                <div class="card-header bg-primary text-white fw-bold">
+                    <i class="fas fa-file-invoice-dollar me-2"></i>Resumen de Cobro
+                </div>
+                <div class="card-body">
+
+                    <!-- Totales -->
+                    <div class="d-flex justify-content-between py-1 border-bottom">
+                        <span class="text-muted small">Subtotal:</span>
+                        <span class="fw-semibold" id="subtotalDisplay">S/. 0.00</span>
+                    </div>
+                    <div class="d-flex justify-content-between py-1 border-bottom">
+                        <span class="text-muted small" id="descuentoLabel">Descuento:</span>
+                        <span class="fw-semibold text-danger" id="descuentoDisplay">- S/. 0.00</span>
+                    </div>
+                    <div class="d-flex justify-content-between py-2 mb-3">
+                        <span class="fw-bold">TOTAL A PAGAR:</span>
+                        <span class="fw-bold fs-4 text-primary" id="totalDisplay">S/. 0.00</span>
+                    </div>
+
+                    <!-- Selector de Descuento Autorizado -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold small mb-2">
+                            <i class="fas fa-tags me-1 text-warning"></i>Descuento Autorizado
+                        </label>
+                        <select class="form-select form-select-sm border-warning border-opacity-50" id="descuentoSelect">
+                            <option value="">Sin Descuento</option>
+                            @foreach (var item in Model.DescuentosActivos)
+                            {
+                                <option value="@item.Value">@item.Text</option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- Método de pago -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold small mb-1">
+                            <i class="fas fa-credit-card me-1 text-primary"></i>Método de Pago *
+                        </label>
+                        <select class="form-select form-select-sm" id="metodoPago" required>
+                            <option value="">-- Selecciona método --</option>
+                            @foreach (var item in Model.MetodosPago)
+                            {
+                                <option value="@item.Value">@item.Text</option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- Sección efectivo -->
+                    <div id="seccionEfectivo" class="d-none bg-success bg-opacity-10 border border-success rounded p-3 mb-3">
+                        <div class="mb-2">
+                            <label class="form-label fw-bold small text-success mb-1">
+                                <i class="fas fa-money-bill-wave me-1"></i>Monto Recibido *
+                            </label>
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text bg-success text-white">S/.</span>
+                                <input type="number" step="0.01" min="0.01" class="form-control fw-bold"
+                                       id="montoRecibido" placeholder="0.00">
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="small fw-semibold text-success">Vuelto:</span>
+                            <span class="fw-bold fs-5 text-success" id="vueltoDisplay">S/. 0.00</span>
+                        </div>
+                        <div id="alertaMontoInsuficiente" class="alert alert-danger py-1 px-2 mb-0 mt-2 d-none small">
+                            <i class="fas fa-exclamation-triangle me-1"></i>Monto insuficiente
+                        </div>
+                    </div>
+
+                    <!-- Botón confirmar -->
+                    <button type="button" class="btn btn-success btn-lg w-100 fw-bold shadow-sm"
+                            id="btnConfirmarVenta" disabled>
+                        <i class="fas fa-check-circle me-2"></i>Registrar Venta
+                    </button>
+                    <div id="loadingVenta" class="text-center mt-2 d-none">
+                        <div class="spinner-border spinner-border-sm text-success me-1"></div>
+                        <small class="text-muted">Procesando venta...</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Nuevo Cliente -->
+<div class="modal fade" id="modalNuevoCliente" tabindex="-1" aria-labelledby="modalNuevoClienteLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header bg-primary text-white p-3">
+                <h5 class="modal-title fw-bold" id="modalNuevoClienteLabel">
+                    <i class="fas fa-user-plus me-2"></i>Nuevo Cliente
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="formNuevoCliente" class="needs-validation" novalidate>
+                    <div class="mb-3">
+                        <label for="modalNombreCompleto" class="form-label fw-semibold small mb-1">Nombre Completo *</label>
+                        <input type="text" class="form-control form-control-sm bg-light border-0" id="modalNombreCompleto" required placeholder="Ej. Juan Pérez">
+                        <div class="invalid-feedback">El nombre es obligatorio.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="modalDNI" class="form-label fw-semibold small mb-1">DNI / Documento *</label>
+                        <input type="text" class="form-control form-control-sm bg-light border-0" id="modalDNI" required pattern="\d{8}" maxlength="8" placeholder="8 dígitos">
+                        <div class="invalid-feedback">El DNI debe tener 8 dígitos numéricos.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="modalEmail" class="form-label fw-semibold small mb-1">Correo Electrónico</label>
+                        <input type="email" class="form-control form-control-sm bg-light border-0" id="modalEmail" placeholder="Ej. cliente@correo.com">
+                        <div class="invalid-feedback">El formato del correo electrónico no es válido.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="modalTelefono" class="form-label fw-semibold small mb-1">Teléfono</label>
+                        <input type="text" class="form-control form-control-sm bg-light border-0" id="modalTelefono" placeholder="Ej. 999999999">
+                    </div>
+                    <div class="mb-3">
+                        <label for="modalDireccion" class="form-label fw-semibold small mb-1">Dirección</label>
+                        <input type="text" class="form-control form-control-sm bg-light border-0" id="modalDireccion" placeholder="Ej. Av. Principal 123">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer p-3 bg-light">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary btn-sm fw-bold px-3" id="btnGuardarClienteRapido">
+                    <i class="fas fa-save me-1"></i>Guardar Cliente
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Inicializar datos del backend
+        const listadoDescuentos = @Html.Raw(Model.DescuentosJson);
+        const esAdmin = @(User.IsInRole("Administrador").ToString().ToLower());
+
+        let cart = [];
+        let selectedDiscountId = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Foco inicial en buscador por barra
+            document.getElementById('campoCodBarra').focus();
+
+            // Cargar catálogo de productos y configurar listeners de filtrado
+            cargarCatalogoProductos();
+            document.getElementById('buscarProductoInput').addEventListener('input', filtrarCatalogo);
+            document.getElementById('campoCodBarra').addEventListener('input', filtrarCatalogo);
+
+            // Configurar Listeners
+            setupBarcodeScanner();
+            setupDiscountControls();
+            setupPaymentMethodControls();
+            setupClientActions();
+            setupConfirmation();
+        });
+
+        // 1. Escaneo por Código de Barras (Enter)
+        function setupBarcodeScanner() {
+            const input = document.getElementById('campoCodBarra');
+            const alertDiv = document.getElementById('alertaBarras');
+
+            input.addEventListener('keydown', async (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const code = input.value.trim();
+                    if (!code) return;
+
+                    alertDiv.className = 'd-none';
+
+                    try {
+                        const res = await fetch(`/api/buscar-codigo/${encodeURIComponent(code)}`);
+                        const data = await res.json();
+
+                        if (data.exito && data.encontrado) {
+                            const p = data.datos;
+                            const cartItem = cart.find(item => item.id === p.id);
+                            const currentQty = cartItem ? cartItem.cantidad : 0;
+
+                            if (p.stock <= currentQty) {
+                                alertDiv.className = 'alert alert-warning py-1 px-2 mt-1 small';
+                                alertDiv.innerHTML = `<i class="fas fa-exclamation-triangle me-1"></i>Stock insuficiente para "${p.nombre}". Disponible: ${p.stock}`;
+                                return;
+                            }
+
+                            agregarProducto(p);
+                            input.value = '';
+                            input.focus();
+                            toastr.success(`"${p.nombre}" agregado.`);
+                        } else {
+                            alertDiv.className = 'alert alert-danger py-1 px-2 mt-1 small';
+                            alertDiv.innerHTML = `<i class="fas fa-times-circle me-1"></i>${data.mensaje || 'Código no encontrado.'}`;
+                        }
+                    } catch (err) {
+                        console.error(err);
+                        toastr.error('Error al consultar código de barras.');
+                    }
+                }
+            });
+        }
+
+        let listadoProductos = []; // Guardará todos los productos cargados
+
+        // Cargar catálogo de productos al iniciar
+        async function cargarCatalogoProductos() {
+            try {
+                const res = await fetch('/api/productos-disponibles');
+                const data = await res.json();
+                if (data.exito && data.datos) {
+                    listadoProductos = data.datos;
+                    renderProductosDisponibles(listadoProductos);
+                } else {
+                    document.getElementById('tablaProductosDisponibles').innerHTML = `
+                        <tr>
+                            <td colspan="7" class="text-center py-4 text-danger">
+                                <i class="fas fa-exclamation-circle me-1"></i> No se pudo cargar el catálogo.
+                            </td>
+                        </tr>`;
+                }
+            } catch (err) {
+                console.error(err);
+                document.getElementById('tablaProductosDisponibles').innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center py-4 text-danger">
+                            <i class="fas fa-exclamation-circle me-1"></i> Error al conectar con el servidor.
+                        </td>
+                    </tr>`;
+            }
+        }
+
+        function renderProductosDisponibles(productos) {
+            const tbody = document.getElementById('tablaProductosDisponibles');
+            tbody.innerHTML = '';
+
+            if (productos.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center py-4 text-muted">
+                            No se encontraron productos disponibles con stock.
+                        </td>
+                    </tr>`;
+                return;
+            }
+
+            productos.forEach(p => {
+                const tr = document.createElement('tr');
+                
+                // Color css helper
+                let colorCss = '#6c757d';
+                const colName = (p.color || '').toLowerCase();
+                if (colName.includes('negro') || colName.includes('black')) colorCss = '#111';
+                else if (colName.includes('blanco') || colName.includes('white')) colorCss = '#f8f9fa';
+                else if (colName.includes('rojo') || colName.includes('red')) colorCss = '#dc3545';
+                else if (colName.includes('azul') || colName.includes('blue')) colorCss = '#0d6efd';
+                else if (colName.includes('verde') || colName.includes('green')) colorCss = '#198754';
+                else if (colName.includes('amarillo') || colName.includes('yellow')) colorCss = '#ffc107';
+                else if (colName.includes('beige')) colorCss = '#f5f5dc';
+
+                const imageHtml = p.imagenUrl 
+                    ? `<img src="/uploads/productos/${p.imagenUrl}" class="rounded border me-2" style="width:30px; height:30px; object-fit:cover;" onerror="this.outerHTML='<div class=\\'rounded border bg-light d-flex align-items-center justify-content-center me-2 text-muted\\' style=\\'width:30px;height:30px;\\'><i class=\\'fas fa-tshirt x-small\\'></i></div>'">`
+                    : `<div class="rounded border bg-light d-flex align-items-center justify-content-center me-2 text-muted" style="width:30px; height:30px;"><i class="fas fa-tshirt x-small"></i></div>`;
+
+                tr.innerHTML = `
+                    <td class="ps-2 fw-semibold">
+                        <div class="d-flex align-items-center">
+                            ${imageHtml}
+                            <span>${p.nombre}</span>
+                        </div>
+                    </td>
+                    <td class="font-monospace text-secondary">${p.codigoBarra || '-'}</td>
+                    <td><span class="badge bg-light text-dark border py-0 px-1">${p.categoria || 'Sin categoría'}</span></td>
+                    <td>
+                        <span class="badge bg-light text-dark border py-0 px-1">
+                            <i class="fas fa-circle me-1" style="color:${colorCss}; font-size:0.6em;"></i>${p.talla}
+                        </span>
+                    </td>
+                    <td class="text-end fw-bold text-primary">S/. ${p.precio.toFixed(2)}</td>
+                    <td class="text-center">
+                        <span class="badge ${p.stock <= 5 ? 'bg-warning text-dark' : 'bg-success'}">${p.stock}</span>
+                    </td>
+                    <td class="text-center">
+                        <button type="button" class="btn btn-success btn-sm btn-agregar-sug fw-bold py-0 px-2" style="font-size: 0.75rem;">
+                            <i class="fas fa-plus me-1"></i>Agregar
+                        </button>
+                    </td>
+                `;
+
+                tr.querySelector('.btn-agregar-sug').addEventListener('click', () => {
+                    const cartItem = cart.find(item => item.id === p.id);
+                    const currentQty = cartItem ? cartItem.cantidad : 0;
+                    if (p.stock <= currentQty) {
+                        toastr.warning(`Stock insuficiente para "${p.nombre}".`);
+                        return;
+                    }
+                    agregarProducto(p);
+                    toastr.success(`"${p.nombre}" agregado al carrito.`);
+                });
+
+                tbody.appendChild(tr);
+            });
+        }
+
+        function filtrarCatalogo() {
+            const textQuery = document.getElementById('buscarProductoInput').value.trim().toLowerCase();
+            const barQuery = document.getElementById('campoCodBarra').value.trim().toLowerCase();
+
+            const filtrados = listadoProductos.filter(p => {
+                const coincideNombre = !textQuery || p.nombre.toLowerCase().includes(textQuery);
+                const coincideCodigo = !barQuery || (p.codigoBarra && p.codigoBarra.toLowerCase().includes(barQuery));
+                return coincideNombre && coincideCodigo;
+            });
+
+            renderProductosDisponibles(filtrados);
+        }
+
+        // 3. Carrito - Agregar y Renderizar
+        function agregarProducto(p) {
+            const itemExistente = cart.find(item => item.id === p.id);
+            if (itemExistente) {
+                itemExistente.cantidad++;
+            } else {
+                cart.push({
+                    id: p.id,
+                    nombre: p.nombre,
+                    precio: p.precio,
+                    stock: p.stock,
+                    color: p.color,
+                    talla: p.talla,
+                    codigoBarra: p.codigoBarra,
+                    cantidad: 1
+                });
+            }
+            renderCart();
+        }
+
+        function cambiarCantidad(id, delta) {
+            const item = cart.find(i => i.id === id);
+            if (!item) return;
+
+            const nuevaCant = item.cantidad + delta;
+            if (nuevaCant < 1) return;
+            if (nuevaCant > item.stock) {
+                toastr.warning(`Solo hay ${item.stock} unidades disponibles.`);
+                return;
+            }
+
+            item.cantidad = nuevaCant;
+            renderCart();
+        }
+
+        function quitarProducto(id) {
+            cart = cart.filter(i => i.id !== id);
+            renderCart();
+        }
+
+        function renderCart() {
+            const tbody = document.getElementById('cartTableBody');
+            tbody.innerHTML = '';
+
+            if (cart.length === 0) {
+                tbody.innerHTML = `
+                    <tr id="emptyCartRow">
+                        <td colspan="7" class="text-center py-5 text-muted">
+                            <i class="fas fa-cart-arrow-down fa-3x mb-2 d-block opacity-25"></i>
+                            Usa el buscador o escanea un código de barras para agregar productos
+                        </td>
+                    </tr>
+                `;
+                document.getElementById('cartCount').textContent = '0 productos';
+                recalcularTotales();
+                return;
+            }
+
+            document.getElementById('cartCount').textContent = `${cart.reduce((s,i) => s + i.cantidad, 0)} productos`;
+
+            cart.forEach(item => {
+                const tr = document.createElement('tr');
+                const subtotal = item.precio * item.cantidad;
+
+                // Color css helper
+                let colorCss = '#6c757d';
+                const colName = (item.color || '').toLowerCase();
+                if (colName.includes('negro') || colName.includes('black')) colorCss = '#111';
+                else if (colName.includes('blanco') || colName.includes('white')) colorCss = '#f8f9fa';
+                else if (colName.includes('rojo') || colName.includes('red')) colorCss = '#dc3545';
+                else if (colName.includes('azul') || colName.includes('blue')) colorCss = '#0d6efd';
+                else if (colName.includes('verde') || colName.includes('green')) colorCss = '#198754';
+                else if (colName.includes('amarillo') || colName.includes('yellow')) colorCss = '#ffc107';
+                else if (colName.includes('beige')) colorCss = '#f5f5dc';
+
+                tr.innerHTML = `
+                    <td class="ps-3 fw-bold">${item.nombre}</td>
+                    <td class="font-monospace text-muted small">${item.codigoBarra || '-'}</td>
+                    <td>
+                        <span class="badge bg-light text-dark border px-2 py-1">
+                            <i class="fas fa-circle me-1" style="color:${colorCss}; font-size:0.7em;"></i>Talla: ${item.talla}
+                        </span>
+                    </td>
+                    <td class="text-end">S/. ${item.precio.toFixed(2)}</td>
+                    <td class="text-center">
+                        <div class="input-group input-group-sm justify-content-center">
+                            <button type="button" class="btn btn-outline-secondary px-2 btn-cant-dec" style="font-size:0.7rem;"><i class="fas fa-minus"></i></button>
+                            <input type="text" class="form-control text-center input-cant-val" value="${item.cantidad}" readonly style="max-width:40px; font-weight:bold;">
+                            <button type="button" class="btn btn-outline-secondary px-2 btn-cant-inc" style="font-size:0.7rem;"><i class="fas fa-plus"></i></button>
+                        </div>
+                    </td>
+                    <td class="text-end fw-bold">S/. ${subtotal.toFixed(2)}</td>
+                    <td class="text-center pe-3">
+                        <button type="button" class="btn btn-link text-danger p-0 btn-quitar-item"><i class="fas fa-trash-alt"></i></button>
+                    </td>
+                `;
+
+                // Set up event listeners
+                tr.querySelector('.btn-cant-dec').addEventListener('click', () => cambiarCantidad(item.id, -1));
+                tr.querySelector('.btn-cant-inc').addEventListener('click', () => cambiarCantidad(item.id, 1));
+                tr.querySelector('.btn-quitar-item').addEventListener('click', () => quitarProducto(item.id));
+
+                tbody.appendChild(tr);
+            });
+
+            recalcularTotales();
+        }
+
+        // 4. Descuentos y Recalculación
+        function setupDiscountControls() {
+            const select = document.getElementById('descuentoSelect');
+            select.addEventListener('change', () => {
+                const val = select.value;
+                selectedDiscountId = val ? parseInt(val) : null;
+                recalcularTotales();
+            });
+        }
+
+        function recalcularTotales() {
+            const subtotal = cart.reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
+            let descuento = 0;
+
+            if (selectedDiscountId) {
+                const d = listadoDescuentos.find(x => x.Id === selectedDiscountId);
+                if (d) {
+                    if (d.Tipo === 'Porcentaje') {
+                        descuento = (subtotal * d.Valor) / 100;
+                    } else if (d.Tipo === 'MontoFijo') {
+                        descuento = d.Valor;
+                    }
+                }
+                document.getElementById('descuentoLabel').textContent = 'Descuento Autorizado:';
+            } else {
+                document.getElementById('descuentoLabel').textContent = 'Descuento:';
+            }
+
+            // Validar que el descuento no supere el subtotal
+            descuento = Math.min(descuento, subtotal);
+            const total = subtotal - descuento;
+
+            // Actualizar interfaz
+            document.getElementById('subtotalDisplay').textContent = `S/. ${subtotal.toFixed(2)}`;
+            document.getElementById('descuentoDisplay').textContent = `- S/. ${descuento.toFixed(2)}`;
+            document.getElementById('totalDisplay').textContent = `S/. ${total.toFixed(2)}`;
+
+            validarVuelto();
+        }
+
+        // 5. Efectivo y Pago Recibido
+        function setupPaymentMethodControls() {
+            const select = document.getElementById('metodoPago');
+            const seccion = document.getElementById('seccionEfectivo');
+            const input = document.getElementById('montoRecibido');
+
+            select.addEventListener('change', () => {
+                const text = select.options[select.selectedIndex].text.toLowerCase();
+                if (text.includes('efectivo')) {
+                    seccion.classList.remove('d-none');
+                    input.required = true;
+                } else {
+                    seccion.classList.add('d-none');
+                    input.required = false;
+                    input.value = '';
+                }
+                validarVuelto();
+            });
+
+            input.addEventListener('input', validarVuelto);
+        }
+
+        function validarVuelto() {
+            const total = parseFloat(document.getElementById('totalDisplay').textContent.replace('S/. ', '')) || 0;
+            const select = document.getElementById('metodoPago');
+            const text = select.options[select.selectedIndex]?.text.toLowerCase() || '';
+            const isEfectivo = text.includes('efectivo');
+
+            const btn = document.getElementById('btnConfirmarVenta');
+            const alertDiv = document.getElementById('alertaMontoInsuficiente');
+            const display = document.getElementById('vueltoDisplay');
+
+            let isValid = cart.length > 0 && 
+                          document.getElementById('vendedor').value !== '' && 
+                          document.getElementById('cliente').value !== '' && 
+                          select.value !== '';
+
+            if (isEfectivo && isValid) {
+                const recibidoVal = parseFloat(document.getElementById('montoRecibido').value) || 0;
+                if (recibidoVal < total) {
+                    alertDiv.classList.remove('d-none');
+                    display.textContent = 'S/. 0.00';
+                    isValid = false;
+                } else {
+                    alertDiv.classList.add('d-none');
+                    const vuelto = recibidoVal - total;
+                    display.textContent = `S/. ${vuelto.toFixed(2)}`;
+                }
+            } else {
+                alertDiv.classList.add('d-none');
+                display.textContent = 'S/. 0.00';
+            }
+
+            btn.disabled = !isValid;
+        }
+
+        // 6. Nuevo Cliente Rápido y Cliente Genérico
+        function setupClientActions() {
+            const btnGenerico = document.getElementById('btnClienteGenerico');
+            const selectCliente = document.getElementById('cliente');
+
+            btnGenerico.addEventListener('click', () => {
+                // Buscar option que coincida con DNI 00000000 o "Cliente Genérico"
+                for (let i = 0; i < selectCliente.options.length; i++) {
+                    const opt = selectCliente.options[i];
+                    if (opt.text.includes('00000000') || opt.text.toLowerCase().includes('generico') || opt.text.toLowerCase().includes('genérico')) {
+                        selectCliente.selectedIndex = i;
+                        toastr.info('Cliente genérico seleccionado.');
+                        break;
+                    }
+                }
+                validarVuelto();
+            });
+
+            // Guardar cliente rápido desde Modal
+            const btnGuardar = document.getElementById('btnGuardarClienteRapido');
+            const form = document.getElementById('formNuevoCliente');
+            const modalEl = document.getElementById('modalNuevoCliente');
+            const modalObj = new bootstrap.Modal(modalEl);
+
+            btnGuardar.addEventListener('click', async () => {
+                if (!form.checkValidity()) {
+                    form.classList.add('was-validated');
+                    return;
+                }
+
+                const request = {
+                    nombreCompleto: document.getElementById('modalNombreCompleto').value.trim(),
+                    dni: document.getElementById('modalDNI').value.trim(),
+                    email: document.getElementById('modalEmail').value.trim() || null,
+                    telefono: document.getElementById('modalTelefono').value.trim() || null,
+                    direccion: document.getElementById('modalDireccion').value.trim() || null
+                };
+
+                btnGuardar.disabled = true;
+
+                try {
+                    const res = await fetch('/api/cliente-rapido', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(request)
+                    });
+                    const data = await res.json();
+
+                    if (data.exito) {
+                        toastr.success(data.mensaje);
+                        
+                        // Añadir cliente creado a la lista y preseleccionarlo
+                        const opt = document.createElement('option');
+                        opt.value = data.id;
+                        opt.textContent = `${data.nombreCompleto} (DNI: ${data.dni})`;
+                        selectCliente.appendChild(opt);
+                        selectCliente.value = data.id;
+
+                        // Resetear y ocultar modal
+                        form.reset();
+                        form.classList.remove('was-validated');
+                        bootstrap.Modal.getInstance(modalEl).hide();
+                        validarVuelto();
+                    } else {
+                        toastr.error(data.mensaje || 'Error al guardar cliente.');
+                    }
+                } catch (err) {
+                    console.error(err);
+                    toastr.error('Error de red al guardar cliente.');
+                } finally {
+                    btnGuardar.disabled = false;
+                }
+            });
+        }
+
+        // 7. Confirmar y Registrar la Venta (POST /api/registrar-venta)
+        function setupConfirmation() {
+            const btn = document.getElementById('btnConfirmarVenta');
+            const loading = document.getElementById('loadingVenta');
+
+            btn.addEventListener('click', async () => {
+                btn.disabled = true;
+                loading.classList.remove('d-none');
+
+                const total = parseFloat(document.getElementById('totalDisplay').textContent.replace('S/. ', '')) || 0;
+
+                const payload = {
+                    clienteId: parseInt(document.getElementById('cliente').value),
+                    vendedorId: parseInt(document.getElementById('vendedor').value),
+                    metodoPagoId: parseInt(document.getElementById('metodoPago').value),
+                    montoRecibido: parseFloat(document.getElementById('montoRecibido').value) || null,
+                    descuentoAutorizadoId: selectedDiscountId ? parseInt(selectedDiscountId) : null,
+                    detalles: cart.map(item => ({
+                        prendaId: item.id,
+                        cantidad: item.cantidad,
+                        precio: item.precio
+                    }))
+                };
+
+                try {
+                    const res = await fetch('/api/registrar-venta', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const data = await res.json();
+
+                    if (data.exito) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Venta Registrada',
+                            text: data.mensaje || 'La venta se ha procesado correctamente.',
+                            confirmButtonColor: '#198754',
+                            confirmButtonText: 'Ver Detalle / Comprobante'
+                        }).then(() => {
+                            window.location.href = `/Ventas/Details/${data.datos.ventaId}`;
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error de Venta',
+                            text: data.mensaje || 'No se pudo procesar la venta.',
+                            confirmButtonColor: '#dc3545'
+                        });
+                        btn.disabled = false;
+                    }
+                } catch (err) {
+                    console.error(err);
+                    toastr.error('Error de red al registrar la venta.');
+                    btn.disabled = false;
+                } finally {
+                    loading.classList.add('d-none');
+                }
+            });
+        }
+    </script>
+}

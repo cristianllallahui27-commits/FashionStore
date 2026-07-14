@@ -31,7 +31,7 @@ namespace FashionStore.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Nombres = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
+                    NombreCompleto = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
                     DNI = table.Column<string>(type: "nvarchar(8)", maxLength: 8, nullable: false),
                     Telefono = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: true),
                     Direccion = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true)

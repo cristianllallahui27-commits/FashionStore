@@ -7,9 +7,6 @@ namespace FashionStore.Web.Services
         public Task SendEmailAsync(
             string email,
             string subject,
-            string htmlMessage)
-        {
-            return Task.CompletedTask;
-        }
+            string htmlMessage) => Task.CompletedTask;
     }
 }

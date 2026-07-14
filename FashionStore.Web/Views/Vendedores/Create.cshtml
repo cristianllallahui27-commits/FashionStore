@@ -1,0 +1,109 @@
+@{
+    ViewData["Title"] = "Crear Vendedor";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<div class="container py-4" style="max-width:700px;">
+    <div class="d-flex align-items-center mb-4 gap-3">
+        <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <div>
+            <h1 class="fw-bold mb-0 text-primary fs-3"><i class="fas fa-user-plus me-2"></i>Crear Vendedor</h1>
+            <p class="text-muted mb-0 small">Se creará un usuario de acceso para el vendedor</p>
+        </div>
+    </div>
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            <ul class="mb-0">
+                @foreach (var err in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <li>@err.ErrorMessage</li>
+                }
+            </ul>
+        </div>
+    }
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-4">
+            <form method="post" asp-action="Create">
+                @Html.AntiForgeryToken()
+
+                <h6 class="fw-bold text-muted mb-3 text-uppercase small">Datos Personales</h6>
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Nombres <span class="text-danger">*</span></label>
+                        <input type="text" name="Nombres" class="form-control" required placeholder="Ej. Juan Carlos">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Apellidos <span class="text-danger">*</span></label>
+                        <input type="text" name="Apellidos" class="form-control" required placeholder="Ej. García López">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">DNI <span class="text-danger">*</span></label>
+                        <input type="text" name="DNI" class="form-control font-monospace" required
+                               pattern="^[0-9]{8}$" maxlength="8" placeholder="12345678">
+                        <div class="form-text">8 dígitos numéricos</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Teléfono</label>
+                        <input type="text" name="Telefono" class="form-control" placeholder="999 999 999">
+                    </div>
+                </div>
+
+                <h6 class="fw-bold text-muted mb-3 text-uppercase small">Credenciales de Acceso</h6>
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Correo / Usuario <span class="text-danger">*</span></label>
+                        <input type="email" name="Email" class="form-control" required placeholder="vendedor@tienda.com">
+                        <div class="form-text">Este será el usuario para iniciar sesión</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Correo Contacto</label>
+                        <input type="email" name="Correo" class="form-control" placeholder="(mismo si se deja vacío)">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Contraseña <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <input type="password" name="Password" id="passwordField" class="form-control" required minlength="6" placeholder="Mínimo 6 caracteres">
+                            <button type="button" class="btn btn-outline-secondary" onclick="togglePassword()">
+                                <i class="fas fa-eye" id="eyeIcon"></i>
+                            </button>
+                        </div>
+                        <div class="form-text">Mínimo 6 caracteres, debe incluir mayúscula y número</div>
+                    </div>
+                </div>
+
+                <div class="alert alert-info py-2 small">
+                    <i class="fas fa-info-circle me-1"></i>
+                    El vendedor tendrá acceso restringido: solo puede usar el POS y ver sus ventas.
+                </div>
+
+                <div class="d-flex gap-2 justify-content-end">
+                    <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i>Crear Vendedor
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+function togglePassword() {
+    const f = document.getElementById('passwordField');
+    const i = document.getElementById('eyeIcon');
+    if (f.type === 'password') {
+        f.type = 'text';
+        i.classList.replace('fa-eye', 'fa-eye-slash');
+    } else {
+        f.type = 'password';
+        i.classList.replace('fa-eye-slash', 'fa-eye');
+    }
+}
+</script>
+}

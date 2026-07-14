@@ -32,18 +32,14 @@ namespace FashionStore.Tests.UnitOfWork
         #region Repository Access Tests
 
         [TestMethod]
-        public void Categorias_Property_IsNotNull()
-        {
+        public void Categorias_Property_IsNotNull() =>
             // Assert
             Assert.IsNotNull(_unitOfWork.Categorias);
-        }
 
         [TestMethod]
-        public void Prendas_Property_IsNotNull()
-        {
+        public void Prendas_Property_IsNotNull() =>
             // Assert
             Assert.IsNotNull(_unitOfWork.Prendas);
-        }
 
         [TestMethod]
         public void Categorias_Property_ReturnsGenericRepository()
@@ -196,11 +192,9 @@ namespace FashionStore.Tests.UnitOfWork
         #region Dispose Tests
 
         [TestMethod]
-        public void Dispose_WithActiveConnection_DisposesContext()
-        {
+        public void Dispose_WithActiveConnection_DisposesContext() =>
             // Act & Assert - should not throw
             _unitOfWork.Dispose();
-        }
 
         [TestMethod]
         public void Dispose_CanBeCalledMultipleTimes()

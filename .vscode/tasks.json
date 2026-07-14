@@ -1,0 +1,125 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "dotnet-run-release",
+            "command": "dotnet",
+            "type": "shell",
+            "args": [
+                "run",
+                "--project",
+                "${workspaceFolder}/FashionStore.Web",
+                "--configuration",
+                "Release",
+                "--no-build"
+            ],
+            "env": {
+                "SUPABASE_PASSWORD": "MiFer2121092001"
+            },
+            "problemMatcher": "$msCompile",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "isBackground": false
+        },
+        {
+            "label": "dotnet-run-debug",
+            "command": "dotnet",
+            "type": "shell",
+            "args": [
+                "run",
+                "--project",
+                "${workspaceFolder}/FashionStore.Web",
+                "--configuration",
+                "Debug",
+                "--no-build"
+            ],
+            "env": {
+                "SUPABASE_PASSWORD": "MiFer2121092001"
+            },
+            "problemMatcher": "$msCompile",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "isBackground": false
+        },
+        {
+            "label": "dotnet-build-release",
+            "command": "dotnet",
+            "type": "shell",
+            "args": [
+                "build",
+                "${workspaceFolder}/FashionStoreSolution.sln",
+                "-c",
+                "Release"
+            ],
+            "problemMatcher": "$msCompile",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "dotnet-build-debug",
+            "command": "dotnet",
+            "type": "shell",
+            "args": [
+                "build",
+                "${workspaceFolder}/FashionStoreSolution.sln",
+                "-c",
+                "Debug"
+            ],
+            "problemMatcher": "$msCompile",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "build",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/FashionStoreSolution.sln",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile",
+            "group": {
+                "kind": "build"
+            }
+        },
+        {
+            "label": "publish",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "publish",
+                "${workspaceFolder}/FashionStoreSolution.sln",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "watch",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "watch",
+                "run",
+                "--project",
+                "${workspaceFolder}/FashionStore.Web"
+            ],
+            "problemMatcher": "$msCompile",
+            "isBackground": true
+        }
+    ]
+}

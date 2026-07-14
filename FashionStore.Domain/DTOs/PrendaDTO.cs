@@ -2,6 +2,12 @@
 
 namespace FashionStore.Domain.DTOs
 {
+    // Clase auxiliar para que las vistas puedan usar .Categoria?.Nombre
+    public class CategoriaInfo
+    {
+        public string? Nombre { get; set; }
+    }
+
     public class PrendaDTO
     {
         public int Id { get; set; }
@@ -29,6 +35,17 @@ namespace FashionStore.Domain.DTOs
 
         public int CategoriaId { get; set; }
 
+        public string? CategoriaNombre { get; set; }
+
+        // Propiedad de navegación para compatibilidad con vistas que usan .Categoria?.Nombre
+        public CategoriaInfo? Categoria => CategoriaNombre != null
+            ? new CategoriaInfo { Nombre = CategoriaNombre }
+            : null;
+
         public string? ImagenUrl { get; set; }
+
+        /// <summary>Código de barras opcional — listo para integración futura con lector</summary>
+        [StringLength(50)]
+        public string? CodigoBarra { get; set; }
     }
 }

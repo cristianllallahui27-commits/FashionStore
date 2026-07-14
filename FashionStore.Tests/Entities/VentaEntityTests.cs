@@ -15,7 +15,7 @@ namespace FashionStore.Tests.Entities
 
             // Assert
             Assert.AreEqual(0, venta.Id);
-            Assert.IsNotNull(venta.Fecha);
+            Assert.AreEqual(DateTime.Now.Date, venta.Fecha.Date);
             Assert.AreEqual(0, venta.ClienteId);
             Assert.IsNull(venta.Cliente);
             Assert.AreEqual(0, venta.VendedorId);

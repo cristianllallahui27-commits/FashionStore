@@ -3,6 +3,7 @@ using FashionStore.Domain.DTOs;
 using FashionStore.Domain.Entities;
 using FashionStore.Domain.Interfaces;
 using FashionStore.Web.Controllers;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 
@@ -13,6 +14,7 @@ namespace FashionStore.Tests.Controllers
     {
         private Mock<IUnitOfWork> _mockUnitOfWork = null!;
         private Mock<IMapper> _mockMapper = null!;
+        private Mock<IWebHostEnvironment> _mockEnv = null!;
         private PrendasController _controller = null!;
 
         [TestInitialize]
@@ -20,7 +22,9 @@ namespace FashionStore.Tests.Controllers
         {
             _mockUnitOfWork = new Mock<IUnitOfWork>();
             _mockMapper = new Mock<IMapper>();
-            _controller = new PrendasController(_mockUnitOfWork.Object, _mockMapper.Object);
+            _mockEnv = new Mock<IWebHostEnvironment>();
+            _mockEnv.Setup(e => e.WebRootPath).Returns("wwwroot");
+            _controller = new PrendasController(_mockUnitOfWork.Object, _mockMapper.Object, _mockEnv.Object);
         }
 
         #region Dashboard Tests

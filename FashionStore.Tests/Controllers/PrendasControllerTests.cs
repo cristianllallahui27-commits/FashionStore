@@ -3,9 +3,12 @@ using FashionStore.Domain.DTOs;
 using FashionStore.Domain.Entities;
 using FashionStore.Domain.Interfaces;
 using FashionStore.Web.Controllers;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Moq;
+
 namespace FashionStore.Tests.Controllers
 {
     [TestClass]
@@ -13,6 +16,7 @@ namespace FashionStore.Tests.Controllers
     {
         private Mock<IUnitOfWork> _mockUnitOfWork = null!;
         private Mock<IMapper> _mockMapper = null!;
+        private Mock<IWebHostEnvironment> _mockEnv = null!;
         private PrendasController _controller = null!;
 
         [TestInitialize]
@@ -20,7 +24,14 @@ namespace FashionStore.Tests.Controllers
         {
             _mockUnitOfWork = new Mock<IUnitOfWork>();
             _mockMapper = new Mock<IMapper>();
-            _controller = new PrendasController(_mockUnitOfWork.Object, _mockMapper.Object);
+            _mockEnv = new Mock<IWebHostEnvironment>();
+            _mockEnv.Setup(e => e.WebRootPath).Returns(Path.GetTempPath());
+            _controller = new PrendasController(_mockUnitOfWork.Object, _mockMapper.Object, _mockEnv.Object);
+
+            // TempData requerido para que TempData["Success"] no lance NullReferenceException
+            _controller.TempData = new TempDataDictionary(
+                new DefaultHttpContext(),
+                Mock.Of<ITempDataProvider>());
         }
 
         #region Index Tests
@@ -32,13 +43,13 @@ namespace FashionStore.Tests.Controllers
             var prendas = new List<Prenda>
             {
                 new Prenda { Id = 1, Nombre = "Camiseta", Talla = "M", Color = "Rojo", Precio = 19.99m, Stock = 50, CategoriaId = 1 },
-                new Prenda { Id = 2, Nombre = "Pantalón", Talla = "32", Color = "Azul", Precio = 49.99m, Stock = 30, CategoriaId = 2 }
+                new Prenda { Id = 2, Nombre = "Pantalï¿½n", Talla = "32", Color = "Azul", Precio = 49.99m, Stock = 30, CategoriaId = 2 }
             };
 
             var prendasDTO = new List<PrendaDTO>
             {
                 new PrendaDTO { Id = 1, Nombre = "Camiseta", Talla = "M", Color = "Rojo", Precio = 19.99m, Stock = 50 },
-                new PrendaDTO { Id = 2, Nombre = "Pantalón", Talla = "32", Color = "Azul", Precio = 49.99m, Stock = 30 }
+                new PrendaDTO { Id = 2, Nombre = "Pantalï¿½n", Talla = "32", Color = "Azul", Precio = 49.99m, Stock = 30 }
             };
 
             _mockUnitOfWork.Setup(u => u.Prendas.GetAllAsync())
@@ -201,7 +212,7 @@ namespace FashionStore.Tests.Controllers
                 .ReturnsAsync(1);
 
             // Act
-            var result = await _controller.Create(prendaDTO, null);
+            var result = await _controller.Create(prendaDTO, null!);
 
             // Assert
             Assert.IsInstanceOfType(result, typeof(RedirectToActionResult));
@@ -221,7 +232,7 @@ namespace FashionStore.Tests.Controllers
                 .ReturnsAsync(categorias);
 
             // Act
-            var result = await _controller.Create(prendaDTO, null);
+            var result = await _controller.Create(prendaDTO, null!);
 
             // Assert
             Assert.IsInstanceOfType(result, typeof(ViewResult));
@@ -562,7 +573,7 @@ namespace FashionStore.Tests.Controllers
                 .ReturnsAsync(1);
 
             // Act
-            var result = await _controller.Create(prendaDTO, null);
+            var result = await _controller.Create(prendaDTO, null!);
 
             // Assert
             Assert.IsInstanceOfType(result, typeof(RedirectToActionResult));
@@ -604,7 +615,7 @@ namespace FashionStore.Tests.Controllers
                 .ReturnsAsync(1);
 
             // Act
-            var result = await _controller.Create(prendaDTO, null);
+            var result = await _controller.Create(prendaDTO, null!);
 
             // Assert
             Assert.IsInstanceOfType(result, typeof(RedirectToActionResult));

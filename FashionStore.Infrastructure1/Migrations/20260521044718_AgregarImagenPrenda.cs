@@ -8,21 +8,15 @@ namespace FashionStore.Infrastructure.Migrations
     public partial class AgregarImagenPrenda : Migration
     {
         /// <inheritdoc />
-        protected override void Up(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.AddColumn<string>(
+        protected override void Up(MigrationBuilder migrationBuilder) => migrationBuilder.AddColumn<string>(
                 name: "ImagenUrl",
                 table: "Prendas",
                 type: "nvarchar(max)",
                 nullable: true);
-        }
 
         /// <inheritdoc />
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.DropColumn(
+        protected override void Down(MigrationBuilder migrationBuilder) => migrationBuilder.DropColumn(
                 name: "ImagenUrl",
                 table: "Prendas");
-        }
     }
 }

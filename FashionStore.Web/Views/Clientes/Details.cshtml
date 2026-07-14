@@ -1,7 +1,8 @@
-﻿@model FashionStore.Domain.DTOs.ClienteDTO
+@model FashionStore.Domain.DTOs.ClienteDTO
 
 @{
     ViewData["Title"] = "Detalle Cliente";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
 <h1>Detalle Cliente</h1>
@@ -18,6 +19,9 @@
 
     <dt class="col-sm-3">Teléfono</dt>
     <dd class="col-sm-9">@Model.Telefono</dd>
+
+    <dt class="col-sm-3">Correo Electrónico</dt>
+    <dd class="col-sm-9">@(Model.Email ?? "-")</dd>
 
     <dt class="col-sm-3">Dirección</dt>
     <dd class="col-sm-9">@Model.Direccion</dd>

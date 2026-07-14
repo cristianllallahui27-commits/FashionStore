@@ -25,10 +25,7 @@ namespace FashionStore.Tests.Repositories
         }
 
         [TestCleanup]
-        public void Cleanup()
-        {
-            _context?.Dispose();
-        }
+        public void Cleanup() => _context?.Dispose();
 
         #region GetAllAsync Tests
 

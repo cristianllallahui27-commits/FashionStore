@@ -1,0 +1,97 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║                                                                            ║
+║         ⚠️  FALTA: Configurar Variable de Entorno SUPABASE_PASSWORD       ║
+║                                                                            ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+ESTADO ACTUAL:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ Base de datos: SUPABASE (PostgreSQL)
+✅ Documentación: COMPLETA
+✅ Código: COMPILABLE
+❌ Variable SUPABASE_PASSWORD: NO CONFIGURADA
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+¿POR QUÉ SE NECESITA?
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+El archivo Program.cs requiere esta variable para:
+
+  1. Leer la contraseña de PostgreSQL
+  2. Reemplazarla en la connection string
+  3. Conectar a Supabase
+
+Sin ella: ❌ Error: SUPABASE_PASSWORD requerido
+
+Con ella: ✅ Conexión exitosa a Supabase
+
+
+PASOS PARA CONFIGURAR:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1️⃣  ABRE PowerShell
+
+2️⃣  EJECUTA:
+	.\setup-supabase-env.ps1
+
+3️⃣  INGRESA:
+	Tu contraseña de Supabase (usuario: postgres)
+
+4️⃣  REINICIA:
+	Visual Studio completamente
+
+5️⃣  COMPILAR:
+	Ctrl + Shift + B
+
+6️⃣  EJECUTAR:
+	F5
+
+
+OBTENER TU CONTRASEÑA:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. https://supabase.com/dashboard
+2. Proyecto: bajbvebkmacdnllnxvkv
+3. Database → Users → postgres
+4. Ahí está tu contraseña
+
+
+DESPUÉS DE CONFIGURAR:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Cuando ejecutes F5, deberías ver:
+
+  ✅ Now listening on: https://localhost:5001
+  ✅ SELECT queries desde AspNetUsers
+  ✅ Página carga sin errores
+
+
+PRUEBA DEL ADMIN:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Email:    Admin@gmail.com
+Password: (la que ingresaste al crear el admin)
+
+Intenta login en: https://localhost:5001
+
+
+📚 MÁS INFORMACIÓN:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Lee: CONFIGURAR_SUPABASE_PASSWORD.md
+
+
+🚀 PRÓXIMO PASO:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Ejecuta ahora en PowerShell:
+
+  .\setup-supabase-env.ps1
+
+Luego vuelve aquí cuando esté listo.
+
+╔════════════════════════════════════════════════════════════════════════════╗
+║                       ¡Fácil de configurar! 💪                           ║
+╚════════════════════════════════════════════════════════════════════════════╝

@@ -12,6 +12,7 @@ using FashionStore.Domain.Entities;
 
 namespace FashionStore.Web.Areas.Identity.Pages.Account;
 
+[Authorize]
 public class LogoutModel : PageModel
 {
     private readonly SignInManager<ApplicationUser> _signInManager;
@@ -21,6 +22,11 @@ public class LogoutModel : PageModel
     {
         _signInManager = signInManager;
         _logger = logger;
+    }
+
+    public IActionResult OnGet(string? returnUrl = null)
+    {
+        return RedirectToPage("/Account/Login", new { area = "Identity" });
     }
 
     public async Task<IActionResult> OnPost(string? returnUrl = null)
@@ -33,9 +39,8 @@ public class LogoutModel : PageModel
         }
         else
         {
-            // This needs to be a redirect so that the browser performs a new
-            // request and the identity for the user gets updated.
-            return RedirectToPage();
+            // Redirect to Login page instead of current page
+            return RedirectToPage("/Account/Login", new { area = "Identity" });
         }
     }
 }

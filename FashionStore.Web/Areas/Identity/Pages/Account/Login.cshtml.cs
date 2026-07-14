@@ -21,11 +21,13 @@ namespace FashionStore.Web.Areas.Identity.Pages.Account;
 public class LoginModel : PageModel
 {
     private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly UserManager<ApplicationUser> _userManager;
     private readonly ILogger<LoginModel> _logger;
 
-    public LoginModel(SignInManager<ApplicationUser> signInManager, ILogger<LoginModel> logger)
+    public LoginModel(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager, ILogger<LoginModel> logger)
     {
         _signInManager = signInManager;
+        _userManager = userManager;
         _logger = logger;
     }
 
@@ -87,6 +89,22 @@ public class LoginModel : PageModel
 
     public async Task OnGetAsync(string? returnUrl = null)
     {
+        // Si el usuario ya está autenticado, redirigir al Dashboard
+        if (_signInManager.IsSignedIn(User))
+        {
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+            {
+                // Si hay returnUrl válido, redirigir allí
+                // Pero esto se maneja en OnPostAsync
+            }
+            else
+            {
+                // Redirigir al Dashboard por defecto
+                Response.Redirect("/Home/Index");
+            }
+            return;
+        }
+
         if (!string.IsNullOrEmpty(ErrorMessage))
         {
             ModelState.AddModelError(string.Empty, ErrorMessage);
@@ -104,12 +122,20 @@ public class LoginModel : PageModel
 
     public async Task<IActionResult> OnPostAsync(string? returnUrl = null)
     {
-        returnUrl ??= Url.Content("~/");
+        // Si no hay returnUrl, redirigir al Dashboard por defecto
+        returnUrl ??= "/Home/Index";
 
         ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
         if (ModelState.IsValid)
         {
+            var user = await _userManager.FindByEmailAsync(Input.Email) ?? await _userManager.FindByNameAsync(Input.Email);
+            if (user != null && !user.Activo)
+            {
+                ModelState.AddModelError(string.Empty, "Su cuenta está inactiva. Contacte al administrador.");
+                return Page();
+            }
+
             // This doesn't count login failures towards account lockout
             // To enable password failures to trigger account lockout, set lockoutOnFailure: true
             var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);

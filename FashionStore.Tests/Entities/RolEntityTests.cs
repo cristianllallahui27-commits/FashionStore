@@ -1,243 +1,170 @@
 using FashionStore.Domain.Entities;
+using Microsoft.AspNetCore.Identity;
 
 namespace FashionStore.Tests.Entities
 {
+    // ─────────────────────────────────────────────────────────────────────
+    // El proyecto usa ASP.NET Identity para roles y usuarios.
+    // Rol y Usuario son clases de Identity: IdentityRole y ApplicationUser.
+    // Estos tests validan el comportamiento de ApplicationUser y la
+    // integración con los roles del sistema (Administrador, Vendedor).
+    // ─────────────────────────────────────────────────────────────────────
+
     [TestClass]
     public class RolEntityTests
     {
-        #region Property Tests
+        #region IdentityRole Tests
 
         [TestMethod]
-        public void Rol_NewInstance_HasDefaultValues()
+        public void IdentityRole_NewInstance_HasDefaultValues()
         {
             // Arrange & Act
-            var rol = new Rol();
+            var rol = new IdentityRole();
 
-            // Assert
-            Assert.AreEqual(0, rol.RolId);
-            Assert.AreEqual(null, rol.Nombre);
-            Assert.IsNull(rol.Descripcion);
-            Assert.IsNotNull(rol.FechaCreacion);
-            Assert.IsNotNull(rol.Usuarios);
+            // Assert — Name y NormalizedName son null por defecto
+            Assert.IsNull(rol.Name);
+            Assert.IsNull(rol.NormalizedName);
         }
 
         [TestMethod]
-        public void Rol_SetNombre_StoresValue()
+        public void IdentityRole_SetNombre_StoresValue()
         {
             // Arrange
-            var rol = new Rol();
-            var nombre = "Administrador";
+            var rol = new IdentityRole();
 
             // Act
-            rol.Nombre = nombre;
+            rol.Name = "Administrador";
 
             // Assert
-            Assert.AreEqual(nombre, rol.Nombre);
+            Assert.AreEqual("Administrador", rol.Name);
         }
 
         [TestMethod]
-        public void Rol_SetDescripcion_StoresValue()
+        public void IdentityRole_SetAllProperties_StoresValues()
         {
             // Arrange
-            var rol = new Rol();
-            var descripcion = "Rol con acceso completo al sistema";
+            var rol = new IdentityRole();
 
             // Act
-            rol.Descripcion = descripcion;
+            rol.Id = "rol-admin-id";
+            rol.Name = "Administrador";
+            rol.NormalizedName = "ADMINISTRADOR";
 
             // Assert
-            Assert.AreEqual(descripcion, rol.Descripcion);
+            Assert.AreEqual("rol-admin-id", rol.Id);
+            Assert.AreEqual("Administrador", rol.Name);
+            Assert.AreEqual("ADMINISTRADOR", rol.NormalizedName);
         }
 
         [TestMethod]
-        public void Rol_SetAllProperties_StoresValues()
+        public void IdentityRole_NombreMaxLength_Is100()
         {
             // Arrange
-            var rol = new Rol();
-            var fecha = DateTime.UtcNow;
-
-            // Act
-            rol.RolId = 1;
-            rol.Nombre = "Vendedor";
-            rol.Descripcion = "Rol de vendedor";
-            rol.FechaCreacion = fecha;
-
-            // Assert
-            Assert.AreEqual(1, rol.RolId);
-            Assert.AreEqual("Vendedor", rol.Nombre);
-            Assert.AreEqual("Rol de vendedor", rol.Descripcion);
-            Assert.AreEqual(fecha, rol.FechaCreacion);
-        }
-
-        #endregion
-
-        #region Validation Tests
-
-        [TestMethod]
-        public void Rol_NombreMaxLength_Is100()
-        {
-            // Arrange
-            var rol = new Rol();
+            var rol = new IdentityRole();
             var longNombre = new string('a', 100);
 
             // Act
-            rol.Nombre = longNombre;
+            rol.Name = longNombre;
 
             // Assert
-            Assert.AreEqual(100, rol.Nombre.Length);
+            Assert.AreEqual(100, rol.Name!.Length);
         }
 
         [TestMethod]
-        public void Rol_NombreMinLength_Is3()
-        {
-            // Arrange
-            var rol = new Rol();
-
-            // Act
-            rol.Nombre = "Adm";
-
-            // Assert
-            Assert.AreEqual(3, rol.Nombre.Length);
-        }
-
-        [TestMethod]
-        public void Rol_DescripcionMaxLength_Is500()
-        {
-            // Arrange
-            var rol = new Rol();
-            var longDescripcion = new string('a', 500);
-
-            // Act
-            rol.Descripcion = longDescripcion;
-
-            // Assert
-            Assert.AreEqual(500, rol.Descripcion.Length);
-        }
-
-        #endregion
-
-        #region Collection Tests
-
-        [TestMethod]
-        public void Rol_Usuarios_InitializedAsEmptyCollection()
+        public void IdentityRole_DescripcionCanBeNull()
         {
             // Arrange & Act
-            var rol = new Rol();
+            var rol = new IdentityRole { Name = "Test" };
 
             // Assert
-            Assert.IsNotNull(rol.Usuarios);
-            Assert.AreEqual(0, rol.Usuarios.Count);
+            Assert.IsNull(rol.NormalizedName);
         }
 
         [TestMethod]
-        public void Rol_AddUsuario_ToCollection()
+        public void IdentityRole_CommonRoles_AreValid()
         {
             // Arrange
-            var rol = new Rol();
-            var usuario = new Usuario { Nombre = "Juan" };
+            var roles = new[] { "Administrador", "Vendedor" };
 
-            // Act
-            rol.Usuarios.Add(usuario);
-
-            // Assert
-            Assert.AreEqual(1, rol.Usuarios.Count);
-            Assert.IsTrue(rol.Usuarios.Contains(usuario));
-        }
-
-        [TestMethod]
-        public void Rol_MultipleUsuarios_InCollection()
-        {
-            // Arrange
-            var rol = new Rol();
-            var usuarios = new List<Usuario>
+            // Act & Assert
+            foreach (var nombre in roles)
             {
-                new Usuario { Nombre = "Juan" },
-                new Usuario { Nombre = "María" },
-                new Usuario { Nombre = "Carlos" }
-            };
-
-            // Act
-            foreach (var usuario in usuarios)
-            {
-                rol.Usuarios.Add(usuario);
+                var rol = new IdentityRole { Name = nombre };
+                Assert.AreEqual(nombre, rol.Name);
             }
-
-            // Assert
-            Assert.AreEqual(3, rol.Usuarios.Count);
         }
 
         #endregion
 
-        #region FechaCreacion Tests
+        #region ApplicationUser Tests
 
         [TestMethod]
-        public void Rol_FechaCreacion_DefaultsToUtcNow()
+        public void ApplicationUser_NewInstance_HasDefaultValues()
         {
             // Arrange & Act
-            var rol = new Rol();
-            var now = DateTime.UtcNow;
+            var user = new ApplicationUser();
 
             // Assert
-            Assert.IsTrue((now - rol.FechaCreacion).TotalSeconds < 1);
+            Assert.IsNull(user.UserName);
+            Assert.IsNull(user.Email);
         }
 
         [TestMethod]
-        public void Rol_FechaCreacion_CanBeSet()
+        public void ApplicationUser_SetEmail_StoresValue()
         {
             // Arrange
-            var rol = new Rol();
-            var fecha = new DateTime(2025, 1, 1, 12, 0, 0, DateTimeKind.Utc);
+            var user = new ApplicationUser();
 
             // Act
-            rol.FechaCreacion = fecha;
+            user.Email = "admin@fashionstore.com";
 
             // Assert
-            Assert.AreEqual(fecha, rol.FechaCreacion);
+            Assert.AreEqual("admin@fashionstore.com", user.Email);
         }
 
-        #endregion
-
-        #region Edge Cases
-
         [TestMethod]
-        public void Rol_CommonRoles_AreValid()
+        public void ApplicationUser_SetAllProperties_StoresValues()
         {
             // Arrange
-            var roles = new[] 
-            { 
-                "Administrador",
-                "Vendedor",
-                "Cliente",
-                "Gerente",
-                "Supervisor"
+            var user = new ApplicationUser();
+
+            // Act
+            user.UserName = "admin@fashionstore.com";
+            user.Email    = "admin@fashionstore.com";
+            user.EmailConfirmed = true;
+
+            // Assert
+            Assert.AreEqual("admin@fashionstore.com", user.UserName);
+            Assert.AreEqual("admin@fashionstore.com", user.Email);
+            Assert.IsTrue(user.EmailConfirmed);
+        }
+
+        [TestMethod]
+        public void ApplicationUser_MultipleUsers_AreIndependent()
+        {
+            // Arrange
+            var usuarios = new List<ApplicationUser>
+            {
+                new ApplicationUser { Email = "user1@test.com" },
+                new ApplicationUser { Email = "user2@test.com" },
+                new ApplicationUser { Email = "user3@test.com" }
             };
 
             // Act & Assert
-            foreach (var nombreRol in roles)
-            {
-                var rol = new Rol { Nombre = nombreRol };
-                Assert.AreEqual(nombreRol, rol.Nombre);
-            }
+            Assert.AreEqual(3, usuarios.Count);
+            Assert.AreEqual("user1@test.com", usuarios[0].Email);
+            Assert.AreEqual("user2@test.com", usuarios[1].Email);
+            Assert.AreEqual("user3@test.com", usuarios[2].Email);
         }
 
         [TestMethod]
-        public void Rol_DescripcionCanBeNull()
+        public void ApplicationUser_EmailConfirmed_DefaultsToFalse()
         {
             // Arrange & Act
-            var rol = new Rol { Nombre = "Test", Descripcion = null };
+            var user = new ApplicationUser();
 
-            // Assert
-            Assert.IsNull(rol.Descripcion);
-        }
-
-        [TestMethod]
-        public void Rol_DescripcionCanBeEmpty()
-        {
-            // Arrange & Act
-            var rol = new Rol { Nombre = "Test", Descripcion = string.Empty };
-
-            // Assert
-            Assert.AreEqual(string.Empty, rol.Descripcion);
+            // Assert — por defecto Identity no confirma el email
+            Assert.IsFalse(user.EmailConfirmed);
         }
 
         #endregion

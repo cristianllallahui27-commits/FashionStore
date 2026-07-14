@@ -1,277 +1,93 @@
 @model FashionStore.Web.ViewModels.DashboardViewModel
 
 @{
-    ViewData["Title"] = "Dashboard CategorÌas";
+    ViewData["Title"] = "Dashboard Categor√≠as";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-      rel="stylesheet" />
-
-<link rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<style>
-
-    body {
-        background: linear-gradient(rgba(0,0,0,.7), rgba(0,0,0,.7)), url('https://images.unsplash.com/photo-1441986300917-64674bd600d8');
-        background-size: cover;
-        background-position: center;
-        background-attachment: fixed;
-        min-height: 100vh;
-    }
-
-    .glass {
-        background: rgba(255,255,255,0.12);
-        backdrop-filter: blur(10px);
-        border-radius: 25px;
-        color: white;
-        border: 1px solid rgba(255,255,255,0.2);
-    }
-
-    .card-modern {
-        border: none;
-        border-radius: 20px;
-        transition: .3s;
-    }
-
-        .card-modern:hover {
-            transform: translateY(-5px);
-        }
-
-    .title-dashboard {
-        font-size: 40px;
-        font-weight: bold;
-    }
-
-</style>
-
-<div class="container py-5">
-
-    <div class="glass p-5 shadow-lg">
-
-        <div class="d-flex justify-content-between align-items-center mb-5">
-
-            <div>
-
-                <h1 class="title-dashboard">
-
-                    <i class="bi bi-tags-fill"></i>
-
-                    Dashboard CategorÌas
-
-                </h1>
-
-                <p class="text-light">
-
-                    Panel administrativo Fashion Store
-
-                </p>
-
-            </div>
-
-            <div>
-
-                <a asp-controller="Categorias"
-                   asp-action="Index"
-                   class="btn btn-light btn-lg">
-
-                    <i class="bi bi-list"></i>
-
-                    Ver CategorÌas
-
-                </a>
-
-                <a asp-controller="Home"
-                   asp-action="Index"
-                   class="btn btn-outline-light ms-3 btn-lg">
-
-                    <i class="bi bi-house"></i>
-
-                    Inicio
-
-                </a>
-
-            </div>
-
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="fw-bold mb-1 text-primary"><i class="fas fa-tags me-2"></i>Dashboard Categor√≠as</h1>
+            <p class="text-muted mb-0">Resumen de categor√≠as y prendas</p>
         </div>
-
-        <!-- TARJETAS -->
-
-        <div class="row g-4">
-
-            <div class="col-md-4">
-
-                <div class="card bg-primary text-white p-4 shadow card-modern">
-
-                    <div class="d-flex justify-content-between">
-
-                        <div>
-
-                            <h5>Total CategorÌas</h5>
-
-                            <h1>@Model.TotalCategorias</h1>
-
-                        </div>
-
-                        <i class="bi bi-tags-fill"
-                           style="font-size:60px;"></i>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div class="col-md-4">
-
-                <div class="card bg-success text-white p-4 shadow card-modern">
-
-                    <div class="d-flex justify-content-between">
-
-                        <div>
-
-                            <h5>Total Prendas</h5>
-
-                            <h1>@Model.TotalPrendas</h1>
-
-                        </div>
-
-                        <i class="bi bi-bag-fill"
-                           style="font-size:60px;"></i>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div class="col-md-4">
-
-                <div class="card bg-danger text-white p-4 shadow card-modern">
-
-                    <div class="d-flex justify-content-between">
-
-                        <div>
-
-                            <h5>Estado</h5>
-
-                            <h2>Activo</h2>
-
-                        </div>
-
-                        <i class="bi bi-graph-up-arrow"
-                           style="font-size:60px;"></i>
-
-                    </div>
-
-                </div>
-
-            </div>
-
+        <div class="d-flex gap-2">
+            <a asp-controller="Categorias" asp-action="Index" class="btn btn-outline-primary">
+                <i class="fas fa-list me-1"></i>Ver Categor√≠as
+            </a>
+            <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">
+                <i class="fas fa-home me-1"></i>Inicio
+            </a>
         </div>
-
-        <!-- GRAFICO -->
-
-        <div class="row mt-5">
-
-            <div class="col-md-12">
-
-                <div class="card bg-dark p-4 shadow-lg">
-
-                    <h3 class="text-white mb-4">
-
-                        <i class="bi bi-bar-chart-fill"></i>
-
-                        Prendas por CategorÌa
-
-                    </h3>
-
-                    <canvas id="categoriasChart"></canvas>
-
-                </div>
-
-            </div>
-
-        </div>
-
     </div>
 
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm text-white bg-primary">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="small text-white-50">Total Categor√≠as</div>
+                        <div class="fw-bold fs-2">@(Model?.TotalCategorias ?? 0)</div>
+                    </div>
+                    <i class="fas fa-tags fa-2x opacity-50"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm text-white bg-success">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="small text-white-50">Total Prendas</div>
+                        <div class="fw-bold fs-2">@(Model?.TotalPrendas ?? 0)</div>
+                    </div>
+                    <i class="fas fa-tshirt fa-2x opacity-50"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm text-white bg-info">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="small text-white-50">Stock Total</div>
+                        <div class="fw-bold fs-2">@(Model?.TotalStock ?? 0)</div>
+                    </div>
+                    <i class="fas fa-boxes fa-2x opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-bottom fw-bold">
+            <i class="fas fa-chart-bar me-2 text-primary"></i>Prendas por Categor√≠a
+        </div>
+        <div class="card-body">
+            <canvas id="categoriasChart" style="max-height:350px;"></canvas>
+        </div>
+    </div>
 </div>
 
+@section Scripts {
 <script>
-
-    const ctx =
-        document.getElementById('categoriasChart');
-
-    new Chart(ctx, {
-
-        type: 'bar',
-
-        data: {
-
-            labels:
-            @Html.Raw(Model.PrendasByCategoryLabelsJson ?? "[]"),
-
-            datasets: [{
-
-                label: 'Cantidad de prendas',
-
-                data:
-                @Html.Raw(Model.PrendasByCategoryDataJson ?? "[]"),
-
-                backgroundColor: [
-
-                    '#0d6efd',
-                    '#198754',
-                    '#dc3545',
-                    '#ffc107',
-                    '#6f42c1'
-
-                ],
-
-                borderRadius: 10
-
-            }]
-        },
-
-        options: {
-
-            responsive: true,
-
-            plugins: {
-
-                legend: {
-
-                    labels: {
-
-                        color: 'white'
-                    }
-                }
+    const ctx = document.getElementById('categoriasChart');
+    if (ctx) {
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: @Html.Raw(Model?.PrendasByCategoryLabelsJson ?? "[]"),
+                datasets: [{
+                    label: 'Cantidad de prendas',
+                    data: @Html.Raw(Model?.PrendasByCategoryDataJson ?? "[]"),
+                    backgroundColor: ['#0d6efd','#198754','#dc3545','#ffc107','#6f42c1','#fd7e14','#20c997'],
+                    borderRadius: 6
+                }]
             },
-
-            scales: {
-
-                x: {
-
-                    ticks: {
-
-                        color: 'white'
-                    }
-                },
-
-                y: {
-
-                    ticks: {
-
-                        color: 'white'
-                    },
-
-                    beginAtZero: true
-                }
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true } }
             }
-        }
-    });
-
+        });
+    }
 </script>
+}

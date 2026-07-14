@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FashionStore.Web.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Administrador")]
     public class CategoriasController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -62,10 +62,7 @@ namespace FashionStore.Web.Controllers
         // CREATE GET
         // =========================================
 
-        public IActionResult Create()
-        {
-            return View();
-        }
+        public IActionResult Create() => View();
 
         // =========================================
         // CREATE POST

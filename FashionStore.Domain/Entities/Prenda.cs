@@ -29,14 +29,30 @@ namespace FashionStore.Domain.Entities
         [Range(0, 10000)]
         public int Stock { get; set; }
 
-        public string? Imagen { get; set; }
-
-        // Clave for�nea
-        public int CategoriaId { get; set; }
-
         public string? ImagenUrl { get; set; }
 
-        // Navegaci�n
+        /// <summary>Código de barras opcional — listo para integración futura con lector</summary>
+        [StringLength(50)]
+        public string? CodigoBarra { get; set; }
+
+        // Clave forénea
+        public int CategoriaId { get; set; }
+
+        // NOTA: Los siguientes campos estarán disponibles en migraciones futuras cuando se requiera:
+        // [Range(0, 10000)]
+        // [Required]
+        // public int StockMinimo { get; set; } = 5;
+        // [Required]
+        // public bool Estado { get; set; } = true;
+
+        // Propiedades calculadas (no mapeadas a BD)
+        [NotMapped]
+        public bool Disponibilidad => Stock > 0;
+
+        [NotMapped]
+        public bool EstaAgotandose => Stock > 0 && Stock <= 5;
+
+        // Navegación
         public Categoria? Categoria { get; set; }
 
         public ICollection<DetalleVenta>? DetalleVentas { get; set; }

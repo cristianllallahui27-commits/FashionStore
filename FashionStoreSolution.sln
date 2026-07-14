@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FashionStore.Domain", "Fash
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FashionStore.Tests", "FashionStore.Tests\FashionStore.Tests.csproj", "{40CAB29D-BBA3-4B09-BE43-01ECBFCBDC43}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FashionStore.Infrastructure", "FashionStore.Infrastructure1\FashionStore.Infrastructure.csproj", "{AC07C704-6EBF-4E29-B5A1-536D4C873E66}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FashionStore.Infrastructure", "FashionStore.Infrastructure\FashionStore.Infrastructure.csproj", "{AC07C704-6EBF-4E29-B5A1-536D4C873E66}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

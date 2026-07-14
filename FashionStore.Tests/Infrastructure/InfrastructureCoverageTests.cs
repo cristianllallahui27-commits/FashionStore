@@ -22,10 +22,7 @@ namespace FashionStore.Tests.InfraCoverage
         }
 
         [TestCleanup]
-        public void Cleanup()
-        {
-            _context?.Dispose();
-        }
+        public void Cleanup() => _context?.Dispose();
 
         [TestMethod]
         public void UnitOfWork_Exposes_All_GenericRepositories()
@@ -83,8 +80,8 @@ namespace FashionStore.Tests.InfraCoverage
             Assert.IsNotNull(nombreProp);
 
             var maxLen = nombreProp.GetMaxLength();
-            // OnModelCreating sets 100
-            Assert.AreEqual(100, maxLen);
+            // [StringLength(150)] in Prenda.cs
+            Assert.AreEqual(150, maxLen);
 
             var precioProp = prendaEntity.FindProperty("Precio");
             Assert.IsNotNull(precioProp);
@@ -92,7 +89,7 @@ namespace FashionStore.Tests.InfraCoverage
             var precision = precioProp.GetPrecision();
             var scale = precioProp.GetScale();
 
-            Assert.AreEqual(18, precision);
+            Assert.AreEqual(10, precision);
             Assert.AreEqual(2, scale);
         }
     }

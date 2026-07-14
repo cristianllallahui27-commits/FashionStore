@@ -4,11 +4,10 @@ using FashionStore.Domain.Entities;
 using FashionStore.Domain.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using AutoMapper;
 
 namespace FashionStore.Web.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Administrador")]
     public class ClientesController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -43,10 +42,7 @@ namespace FashionStore.Web.Controllers
         // CREATE GET
         // ============================
 
-        public IActionResult Create()
-        {
-            return View();
-        }
+        public IActionResult Create() => View();
 
         // ============================
         // CREATE POST

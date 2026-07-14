@@ -1,83 +1,437 @@
 @page
 @model LoginModel
-
+@inject FashionStore.Web.Services.IConfiguracionSistemaService ConfigService
 @{
-    ViewData["Title"] = "Log in";
+    var config = await ConfigService.ObtenerConfiguracionAsync();
+    var colorPrimario = config.ColorPrimario ?? "#667eea";
+    var colorSecundario = config.ColorSecundario ?? "#764ba2";
+    var colorBotones = config.ColorBotones ?? "#667eea";
+    ViewData["Title"] = $"Iniciar Sesión - {(config.NombreTienda ?? "FashionStore")}";
+    Layout = null;
 }
 
-<h1>@ViewData["Title"]</h1>
-<div class="row">
-    <div class="col-md-4">
-        <section>
-            <form id="account" method="post">
-                <h2>Use a local account to log in.</h2>
-                <hr />
-                <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
-                <div class="form-floating mb-3">
-                    <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
-                    <label asp-for="Input.Email" class="form-label">Email</label>
-                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"]</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- FontAwesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+
+    <!-- AdminLTE 3 -->
+    <link href="https://cdn.jsdelivr.net/npm/admin-lte@3.2.0/dist/css/adminlte.min.css" rel="stylesheet" />
+
+    <!-- SweetAlert2 -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet" />
+
+    <!-- Toastr -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+
+    <style>
+        html, body {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            @if (!string.IsNullOrEmpty(config.RutaFondoLogin))
+            {
+                <text>background: url('@config.RutaFondoLogin') no-repeat center center fixed; background-size: cover;</text>
+            }
+            else
+            {
+                <text>background: linear-gradient(135deg, @colorPrimario 0%, @colorSecundario 100%);</text>
+            }
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 450px;
+            padding: 15px;
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .login-header {
+            background: linear-gradient(135deg, @colorPrimario 0%, @colorSecundario 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .login-logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 40px;
+        }
+
+        .login-header h1 {
+            font-size: 28px;
+            margin: 0 0 10px 0;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .login-header p {
+            margin: 0;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .login-body {
+            padding: 40px 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            display: block;
+            font-size: 14px;
+        }
+
+        .form-control {
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .form-control:focus {
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.15);
+        }
+
+        .form-control::placeholder {
+            color: #999;
+        }
+
+        .remember-forgot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+
+        .form-check {
+            margin: 0;
+        }
+
+        .form-check-input {
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #e0e0e0;
+            border-radius: 4px;
+        }
+
+        .form-check-input:checked {
+            background-color: #667eea;
+            border-color: #667eea;
+        }
+
+        .form-check-label {
+            cursor: pointer;
+            margin-left: 8px;
+            user-select: none;
+        }
+
+        .forgot-link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .forgot-link:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
+        .btn-login {
+            width: 100%;
+            background: linear-gradient(135deg, @colorPrimario 0%, @colorBotones 100%);
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        .btn-login:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .validation-errors {
+            background: #fee;
+            border-left: 4px solid #dc3545;
+            color: #dc3545;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .validation-errors .error-item {
+            margin: 5px 0;
+        }
+
+        .validation-errors .error-item:first-child {
+            margin-top: 0;
+        }
+
+        .text-center-custom {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .text-center-custom p {
+            margin: 0;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .text-center-custom a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            margin-left: 5px;
+            transition: color 0.3s ease;
+        }
+
+        .text-center-custom a:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
+        .input-group-icon {
+            position: relative;
+        }
+
+        .input-group-icon i {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            pointer-events: none;
+        }
+
+        .input-group-icon .form-control {
+            padding-right: 40px;
+        }
+
+        @@media (max-width: 576px) {
+            .login-container {
+                padding: 10px;
+            }
+
+            .login-header {
+                padding: 30px 15px;
+            }
+
+            .login-header h1 {
+                font-size: 24px;
+            }
+
+            .login-body {
+                padding: 30px 20px;
+            }
+
+            .login-logo {
+                width: 60px;
+                height: 60px;
+                font-size: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-container">
+        <div class="login-card">
+
+            <!-- Header -->
+            <div class="login-header">
+                <div class="login-logo" style="@(!string.IsNullOrEmpty(config.RutaLogo) ? "background: transparent; border-radius: 0;" : "")">
+                    @if (!string.IsNullOrEmpty(config.RutaLogo))
+                    {
+                        <img src="@config.RutaLogo" alt="Logo" style="width: 100%; height: 100%; object-fit: contain;" />
+                    }
+                    else
+                    {
+                        <i class="fas fa-shopping-bag"></i>
+                    }
                 </div>
-                <div class="form-floating mb-3">
-                    <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
-                    <label asp-for="Input.Password" class="form-label">Password</label>
-                    <span asp-validation-for="Input.Password" class="text-danger"></span>
-                </div>
-                <div class="checkbox mb-3">
-                    <label asp-for="Input.RememberMe" class="form-label">
-                        <input class="form-check-input" asp-for="Input.RememberMe" />
-                        @Html.DisplayNameFor(m => m.Input.RememberMe)
-                    </label>
-                </div>
-                <div>
-                    <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-primary">Log in</button>
-                </div>
-                <div>
-                    <p>
-                        <a id="forgot-password" asp-page="./ForgotPassword">Forgot your password?</a>
-                    </p>
-                    <p>
-                        <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Register as a new user</a>
-                    </p>
-                    <p>
-                        <a id="resend-confirmation" asp-page="./ResendEmailConfirmation">Resend email confirmation</a>
-                    </p>
-                </div>
-            </form>
-        </section>
-    </div>
-    <div class="col-md-6 col-md-offset-2">
-        <section>
-            <h3>Use another service to log in.</h3>
-            <hr />
-            @{
-                if ((Model.ExternalLogins?.Count ?? 0) == 0)
+                <h1>@(config.NombreTienda ?? "FashionStore")</h1>
+                <p>@(config.Descripcion ?? "Gestión de Tienda de Ropa")</p>
+            </div>
+
+            <!-- Body -->
+            <div class="login-body">
+
+                <!-- Errores de validación -->
+                @if (!ModelState.IsValid && ModelState.Values.Any(m => m.Errors.Any()))
                 {
-                    <div>
-                        <p>
-                            There are no external authentication services configured. See this <a href="https://go.microsoft.com/fwlink/?LinkID=532715">article
-                            about setting up this ASP.NET application to support logging in via external services</a>.
-                        </p>
+                    <div class="validation-errors">
+                        @foreach (var modelState in ViewData.ModelState.Values)
+                        {
+                            @foreach (var error in modelState.Errors)
+                            {
+                                <div class="error-item">
+                                    <i class="fas fa-exclamation-circle"></i> @error.ErrorMessage
+                                </div>
+                            }
+                        }
                     </div>
                 }
-                else
-                {
-                    <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
-                        <div>
-                            <p>
-                                @foreach (var provider in Model.ExternalLogins!)
-                                {
-                                    <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
-                                }
-                            </p>
-                        </div>
-                    </form>
-                }
-            }
-        </section>
-    </div>
-</div>
 
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
+                <!-- Mensaje de error temporal -->
+                @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+                {
+                    <div class="validation-errors">
+                        <div class="error-item">
+                            <i class="fas fa-exclamation-circle"></i> @Model.ErrorMessage
+                        </div>
+                    </div>
+                }
+
+                <!-- Formulario -->
+                <form id="account" method="post">
+
+                    <!-- Email -->
+                    <div class="form-group">
+                        <label asp-for="Input.Email">
+                            <i class="fas fa-envelope"></i> Correo Electrónico
+                        </label>
+                        <div class="input-group-icon">
+                            <input asp-for="Input.Email"
+                                   class="form-control"
+                                   placeholder="correo@ejemplo.com"
+                                   autocomplete="username"
+                                   aria-required="true" />
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <span asp-validation-for="Input.Email" class="text-danger" style="font-size: 12px; display: block; margin-top: 5px;"></span>
+                    </div>
+
+                    <!-- Contraseña -->
+                    <div class="form-group">
+                        <label asp-for="Input.Password">
+                            <i class="fas fa-lock"></i> Contraseña
+                        </label>
+                        <div class="input-group-icon">
+                            <input asp-for="Input.Password"
+                                   class="form-control"
+                                   placeholder="••••••••"
+                                   autocomplete="current-password"
+                                   aria-required="true" />
+                            <i class="fas fa-key"></i>
+                        </div>
+                        <span asp-validation-for="Input.Password" class="text-danger" style="font-size: 12px; display: block; margin-top: 5px;"></span>
+                    </div>
+
+                    <!-- Recordar y Recuperar -->
+                    <div class="remember-forgot">
+                        <div class="form-check">
+                            <input class="form-check-input" asp-for="Input.RememberMe" />
+                            <label class="form-check-label" asp-for="Input.RememberMe">
+                                Recordar sesión
+                            </label>
+                        </div>
+                        <a asp-page="./ForgotPassword" class="forgot-link">
+                            ¿Olvidó su contraseña?
+                        </a>
+                    </div>
+
+                    <!-- Botón Submit -->
+                    <button id="login-submit" type="submit" class="btn btn-login">
+                        <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                    </button>
+
+                </form>
+
+
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+    <script>
+        // Animación de carga al enviar formulario
+        document.getElementById('account').addEventListener('submit', function () {
+            const btn = document.getElementById('login-submit');
+            btn.disabled = true;
+        });
+
+        // Mostrar toastr si hay error
+        @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+        {
+            <text>
+            toastr.error('@Html.Raw(Model.ErrorMessage)', 'Error de Autenticación');
+            </text>
+        }
+    </script>
+
+    @section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+    }
+
+</body>
+</html>

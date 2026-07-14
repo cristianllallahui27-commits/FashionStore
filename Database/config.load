@@ -1,0 +1,16 @@
+LOAD DATABASE
+  FROM mssql://ADMIN/FashionStoreDB
+  INTO postgres://postgres:MiFer2121092001@db.bajbvebkmacdnllnxvkv.supabase.co:5432/postgres
+
+WITH include drop, create tables, create indexes, reset sequences, 
+     foreign keys constraints, disable triggers
+
+BEFORE LOAD DO
+  $$ DROP SCHEMA IF EXISTS public CASCADE; $$,
+  $$ CREATE SCHEMA public; $$,
+  $$ ALTER SCHEMA public OWNER TO postgres; $$;
+
+AFTER LOAD DO
+  $$ ALTER SCHEMA public OWNER TO postgres; $$;
+
+EXCLUDING TABLE NAMES MATCHING 'sysdiagrams', '__MigrationHistory', 'AspNet.*';

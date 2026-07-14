@@ -15,10 +15,11 @@ namespace FashionStore.Tests.DTOs
 
             // Assert
             Assert.AreEqual(0, clienteDTO.Id);
-            Assert.IsNull(clienteDTO.NombreCompleto);
-            Assert.IsNull(clienteDTO.DNI);
-            Assert.IsNull(clienteDTO.Telefono);
-            Assert.IsNull(clienteDTO.Direccion);
+            Assert.AreEqual(string.Empty, clienteDTO.NombreCompleto);
+            Assert.AreEqual(string.Empty, clienteDTO.DNI);
+            Assert.AreEqual(string.Empty, clienteDTO.Telefono);
+            Assert.AreEqual(string.Empty, clienteDTO.Direccion);
+            Assert.IsNull(clienteDTO.Email);
         }
 
         [TestMethod]
@@ -73,43 +74,43 @@ namespace FashionStore.Tests.DTOs
         #region Null Handling Tests
 
         [TestMethod]
-        public void ClienteDTO_NombreCompletoCanBeNull()
+        public void ClienteDTO_NombreCompletoCanBeEmpty()
         {
             // Arrange & Act
-            var clienteDTO = new ClienteDTO { NombreCompleto = null };
+            var clienteDTO = new ClienteDTO { NombreCompleto = string.Empty };
 
             // Assert
-            Assert.IsNull(clienteDTO.NombreCompleto);
+            Assert.AreEqual(string.Empty, clienteDTO.NombreCompleto);
         }
 
         [TestMethod]
-        public void ClienteDTO_DNICanBeNull()
+        public void ClienteDTO_DNICanBeEmpty()
         {
             // Arrange & Act
-            var clienteDTO = new ClienteDTO { DNI = null };
+            var clienteDTO = new ClienteDTO { DNI = string.Empty };
 
             // Assert
-            Assert.IsNull(clienteDTO.DNI);
+            Assert.AreEqual(string.Empty, clienteDTO.DNI);
         }
 
         [TestMethod]
-        public void ClienteDTO_TelefonoCanBeNull()
+        public void ClienteDTO_TelefonoCanBeEmpty()
         {
             // Arrange & Act
-            var clienteDTO = new ClienteDTO { Telefono = null };
+            var clienteDTO = new ClienteDTO { Telefono = string.Empty };
 
             // Assert
-            Assert.IsNull(clienteDTO.Telefono);
+            Assert.AreEqual(string.Empty, clienteDTO.Telefono);
         }
 
         [TestMethod]
-        public void ClienteDTO_DireccionCanBeNull()
+        public void ClienteDTO_DireccionCanBeEmpty()
         {
             // Arrange & Act
-            var clienteDTO = new ClienteDTO { Direccion = null };
+            var clienteDTO = new ClienteDTO { Direccion = string.Empty };
 
             // Assert
-            Assert.IsNull(clienteDTO.Direccion);
+            Assert.AreEqual(string.Empty, clienteDTO.Direccion);
         }
 
         #endregion

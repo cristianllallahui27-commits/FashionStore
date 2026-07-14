@@ -1,0 +1,15 @@
+{
+    "debug.javascript.autoExpandGetters": false,
+    "debug.console.fontSize": 12,
+    "debug.console.lineNumbers": true,
+    "C#.debug.logging": false,
+    "C#.autoDecompile": false,
+    "[csharp]": {
+        "editor.defaultFormatter": "ms-dotnettools.csharp",
+        "editor.formatOnSave": true
+    },
+    "omnisharp.enableRoslynAnalyzers": true,
+    "omnisharp.enableEditorConfigSupport": true,
+    "extensions.ignoreRecommendations": false,
+    "dotnet.defaultSolutionOrFolder": "${workspaceFolder}"
+}

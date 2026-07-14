@@ -33,6 +33,15 @@ namespace FashionStore.Infrastructure.UnitOfWork
 
             MetodosPago =
                 new GenericRepository<MetodoPago>(_context);
+
+            Configuraciones =
+                new GenericRepository<ConfiguracionSistema>(_context);
+
+            ConfiguracionesAuditoria =
+                new GenericRepository<ConfiguracionAuditoria>(_context);
+
+            DescuentosAutorizados =
+                new GenericRepository<DescuentoAutorizado>(_context);
         }
 
         // ====================================
@@ -53,14 +62,17 @@ namespace FashionStore.Infrastructure.UnitOfWork
 
         public IGenericRepository<MetodoPago> MetodosPago { get; }
 
+        public IGenericRepository<ConfiguracionSistema> Configuraciones { get; }
+
+        public IGenericRepository<ConfiguracionAuditoria> ConfiguracionesAuditoria { get; }
+
+        public IGenericRepository<DescuentoAutorizado> DescuentosAutorizados { get; }
+
         // ====================================
         // GUARDAR
         // ====================================
 
-        public async Task<int> CommitAsync()
-        {
-            return await _context.SaveChangesAsync();
-        }
+        public async Task<int> CommitAsync() => await _context.SaveChangesAsync();
 
         public void Dispose()
         {

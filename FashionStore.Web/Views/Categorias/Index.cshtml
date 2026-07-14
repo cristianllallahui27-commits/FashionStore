@@ -1,78 +1,138 @@
-﻿@model IEnumerable<FashionStore.Domain.DTOs.CategoriaDTO>
+@model IEnumerable<FashionStore.Domain.DTOs.CategoriaDTO>
 
 @{
-    ViewData["Title"] = "Categorías";
+    ViewData["Title"] = "Gestión de Categorías";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<div class="container mt-4">
-
-    <div class="d-flex justify-content-between align-items-center mb-4">
-
-        <h1 class="page-title">
-            Categorías
-        </h1>
-
-        <a asp-action="Create" class="btn btn-success btn-modern">
-            + Nueva Categoría
+<!-- Header -->
+<div class="mb-5">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="fw-bold mb-1"><i class="fas fa-list me-2"></i>Gestión de Categorías</h1>
+            <p class="text-muted mb-0">Organiza tu catálogo de productos</p>
+        </div>
+        <a href="/Categorias/Create" class="btn btn-primary btn-lg">
+            <i class="fas fa-plus me-2"></i>Nueva Categoría
         </a>
-
     </div>
-
-    <div class="table-responsive table-modern p-3">
-
-        <table class="table align-middle">
-
-            <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>Descripción</th>
-                    <th width="250">Acciones</th>
-                </tr>
-            </thead>
-
-            <tbody>
-
-                @foreach (var item in Model)
-                {
-                    <tr>
-
-                        <td>
-                            <strong>@item.Nombre</strong>
-                        </td>
-
-                        <td>
-                            @item.Descripcion
-                        </td>
-
-                        <td>
-
-                            <a asp-action="Edit"
-                               asp-route-id="@item.Id"
-                               class="btn btn-warning btn-sm btn-modern">
-                                Editar
-                            </a>
-
-                            <a asp-action="Details"
-                               asp-route-id="@item.Id"
-                               class="btn btn-info btn-sm btn-modern">
-                                Detalles
-                            </a>
-
-                            <a asp-action="Delete"
-                               asp-route-id="@item.Id"
-                               class="btn btn-danger btn-sm btn-modern">
-                                Eliminar
-                            </a>
-
-                        </td>
-
-                    </tr>
-                }
-
-            </tbody>
-
-        </table>
-
-    </div>
-
 </div>
+
+<!-- Tarjetas de Categorías -->
+<div class="row">
+    @if (Model?.Count() > 0)
+    {
+        @foreach (var categoria in Model)
+        {
+            <div class="col-lg-4 col-md-6 mb-4 animate-fade-in-up">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div>
+                                <h5 class="card-title fw-bold mb-1">@categoria.Nombre</h5>
+                                <p class="card-text text-muted small">@categoria.Descripcion</p>
+                            </div>
+                            <i class="fas fa-folder fa-2x text-primary opacity-50"></i>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-light border-top-0">
+                        <div class="btn-group w-100" role="group">
+                            <a href="/Categorias/Edit/@categoria.Id" class="btn btn-sm btn-outline-warning">
+                                <i class="fas fa-edit me-1"></i>Editar
+                            </a>
+                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="confirmarEliminar('@categoria.Id', '@categoria.Nombre')">
+                                <i class="fas fa-trash me-1"></i>Eliminar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-5 text-center">
+                    <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
+                    <p class="text-muted mb-3">No hay categorías registradas</p>
+                    <a href="/Categorias/Create" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Crear Primera Categoría
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Tabla Alternativa (Responsive) -->
+<div class="mt-5">
+    <div class="card border-0 shadow-sm d-none d-lg-block">
+        <div class="card-header">
+            <h5 class="mb-0">Vista Detallada</h5>
+        </div>
+        <div class="card-body p-0">
+            @if (Model?.Count() > 0)
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Descripción</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var categoria in Model)
+                            {
+                                <tr>
+                                    <td class="fw-bold">@categoria.Nombre</td>
+                                    <td>@categoria.Descripcion</td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <a href="/Categorias/Edit/@categoria.Id" class="btn btn-outline-warning">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <button type="button" class="btn btn-outline-danger" onclick="confirmarEliminar('@categoria.Id', '@categoria.Nombre')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function confirmarEliminar(id, nombre) {
+            Swal.fire({
+                title: '¿Eliminar categoría?',
+                text: `¿Estás seguro de que deseas eliminar "${nombre}"?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#f56565',
+                cancelButtonColor: '#667eea',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`/Categorias/Delete/${id}`, { method: 'DELETE' })
+                        .then(() => {
+                            window.utils.showSuccess('Categoría eliminada correctamente');
+                            window.location.reload();
+                        })
+                        .catch(err => {
+                            window.utils.showError('Error al eliminar la categoría');
+                        });
+                }
+            });
+        }
+    </script>
+}

@@ -1,0 +1,130 @@
+@{
+    ViewData["Title"] = "Mi Perfil";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+    var esAdmin = (bool)(ViewBag.EsAdministrador ?? false);
+    var vendedor = ViewBag.Vendedor as FashionStore.Domain.Entities.Vendedor;
+}
+
+<div class="container py-4" style="max-width:800px;">
+    <h1 class="fw-bold mb-4 text-primary"><i class="fas fa-id-card me-2"></i>Mi Perfil</h1>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            <i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row g-4">
+        <!-- Tarjeta de perfil -->
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm text-center p-4">
+                <div class="rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center fw-bold text-white"
+                     style="width:80px;height:80px;font-size:2rem;background:@(esAdmin ? "#dc3545" : "#198754");">
+                    @((ViewBag.UserName as string ?? "U").Substring(0, 1).ToUpper())
+                </div>
+                <h5 class="fw-bold mb-1">@ViewBag.UserName</h5>
+                <div class="mb-3">
+                    @if (esAdmin)
+                    {
+                        <span class="badge bg-danger"><i class="fas fa-shield-alt me-1"></i>Administrador</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-success"><i class="fas fa-user-tag me-1"></i>Vendedor</span>
+                    }
+                </div>
+                <p class="text-muted small mb-0"><i class="fas fa-envelope me-1"></i>@ViewBag.Email</p>
+
+                @if (esAdmin)
+                {
+                    <div class="mt-4 pt-3 border-top">
+                        <a href="/Configuracion/Index" class="btn btn-outline-primary btn-sm w-100">
+                            <i class="fas fa-cog me-1"></i>Ir a Configuración del Sistema
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Datos y cambio de contraseña -->
+        <div class="col-md-8">
+
+            @* Datos del vendedor si aplica *@
+            @if (!esAdmin && vendedor != null)
+            {
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white border-bottom">
+                        <h6 class="fw-bold mb-0"><i class="fas fa-user-tie me-2 text-success"></i>Datos del Vendedor</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <small class="text-muted d-block">Nombre completo</small>
+                                <span class="fw-semibold">@vendedor.Nombres @vendedor.Apellidos</span>
+                            </div>
+                            <div class="col-sm-6">
+                                <small class="text-muted d-block">DNI</small>
+                                <span class="fw-semibold font-monospace">@vendedor.DNI</span>
+                            </div>
+                            <div class="col-sm-6">
+                                <small class="text-muted d-block">Teléfono</small>
+                                <span>@(vendedor.Telefono ?? "-")</span>
+                            </div>
+                            <div class="col-sm-6">
+                                <small class="text-muted d-block">Estado</small>
+                                @if (vendedor.Estado)
+                                {
+                                    <span class="badge bg-success">Activo</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Inactivo</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <!-- Cambiar contraseña -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-bottom">
+                    <h6 class="fw-bold mb-0"><i class="fas fa-lock me-2 text-primary"></i>Cambiar Contraseña</h6>
+                </div>
+                <div class="card-body">
+                    <form method="post" asp-action="CambiarPassword">
+                        @Html.AntiForgeryToken()
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Contraseña Actual</label>
+                            <input type="password" name="PasswordActual" class="form-control" required
+                                   placeholder="Tu contraseña actual">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Nueva Contraseña</label>
+                            <input type="password" name="PasswordNuevo" class="form-control" required
+                                   minlength="6" placeholder="Mínimo 6 caracteres">
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Confirmar Nueva Contraseña</label>
+                            <input type="password" name="PasswordConfirmar" class="form-control" required
+                                   placeholder="Repite la nueva contraseña">
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-key me-1"></i>Actualizar Contraseña
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

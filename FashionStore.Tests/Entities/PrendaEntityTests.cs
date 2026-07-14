@@ -21,7 +21,6 @@ namespace FashionStore.Tests.Entities
             Assert.AreEqual(string.Empty, prenda.Color);
             Assert.AreEqual(0, prenda.Precio);
             Assert.AreEqual(0, prenda.Stock);
-            Assert.IsNull(prenda.Imagen);
             Assert.IsNull(prenda.ImagenUrl);
             Assert.AreEqual(0, prenda.CategoriaId);
             Assert.IsNull(prenda.Categoria);
@@ -51,24 +50,22 @@ namespace FashionStore.Tests.Entities
             // Act
             prenda.Id = 1;
             prenda.Nombre = "Camiseta";
-            prenda.Descripcion = "Camiseta de algodón";
+            prenda.Descripcion = "Camiseta de algodon";
             prenda.Talla = "M";
             prenda.Color = "Rojo";
             prenda.Precio = 29.99m;
             prenda.Stock = 100;
-            prenda.Imagen = "imagen.jpg";
             prenda.ImagenUrl = "http://example.com/imagen.jpg";
             prenda.CategoriaId = 1;
 
             // Assert
             Assert.AreEqual(1, prenda.Id);
             Assert.AreEqual("Camiseta", prenda.Nombre);
-            Assert.AreEqual("Camiseta de algodón", prenda.Descripcion);
+            Assert.AreEqual("Camiseta de algodon", prenda.Descripcion);
             Assert.AreEqual("M", prenda.Talla);
             Assert.AreEqual("Rojo", prenda.Color);
             Assert.AreEqual(29.99m, prenda.Precio);
             Assert.AreEqual(100, prenda.Stock);
-            Assert.AreEqual("imagen.jpg", prenda.Imagen);
             Assert.AreEqual("http://example.com/imagen.jpg", prenda.ImagenUrl);
             Assert.AreEqual(1, prenda.CategoriaId);
         }
@@ -255,16 +252,6 @@ namespace FashionStore.Tests.Entities
 
             // Assert
             Assert.IsNull(prenda.ImagenUrl);
-        }
-
-        [TestMethod]
-        public void Prenda_ImagenCanBeNull()
-        {
-            // Arrange & Act
-            var prenda = new Prenda { Imagen = null };
-
-            // Assert
-            Assert.IsNull(prenda.Imagen);
         }
 
         [TestMethod]

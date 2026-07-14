@@ -28,10 +28,7 @@ public class DownloadPersonalDataModel : PageModel
         _logger = logger;
     }
 
-    public IActionResult OnGet()
-    {
-        return NotFound();
-    }
+    public IActionResult OnGet() => NotFound();
 
     public async Task<IActionResult> OnPostAsync()
     {

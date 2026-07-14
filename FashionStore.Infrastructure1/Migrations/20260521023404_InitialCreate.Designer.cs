@@ -64,7 +64,7 @@ namespace FashionStore.Infrastructure.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<string>("Nombres")
+                    b.Property<string>("NombreCompleto")
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");

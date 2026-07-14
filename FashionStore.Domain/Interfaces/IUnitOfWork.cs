@@ -2,7 +2,7 @@
 
 namespace FashionStore.Domain.Interfaces
 {
-    public interface IUnitOfWork
+    public interface IUnitOfWork : IDisposable
     {
         // ============================
         // TABLAS
@@ -21,6 +21,12 @@ namespace FashionStore.Domain.Interfaces
         IGenericRepository<DetalleVenta> DetalleVentas { get; }
 
         IGenericRepository<MetodoPago> MetodosPago { get; }
+
+        IGenericRepository<ConfiguracionSistema> Configuraciones { get; }
+
+        IGenericRepository<ConfiguracionAuditoria> ConfiguracionesAuditoria { get; }
+
+        IGenericRepository<DescuentoAutorizado> DescuentosAutorizados { get; }
 
         // ============================
         // GUARDAR

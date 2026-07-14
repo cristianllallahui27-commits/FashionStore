@@ -17,12 +17,25 @@ namespace FashionStore.Domain.Entities
         public int VendedorId { get; set; }
         public Vendedor? Vendedor { get; set; }
 
-        // Método Pago
+        // Metodo Pago
         public int MetodoPagoId { get; set; }
         public MetodoPago? MetodoPago { get; set; }
 
         [Column(TypeName = "decimal(10,2)")]
         public decimal Total { get; set; }
+
+        // Campos para pago en efectivo (RF-04)
+        [Column(TypeName = "decimal(10,2)")]
+        public decimal? MontoRecibido { get; set; }
+
+        [Column(TypeName = "decimal(10,2)")]
+        public decimal? Vuelto { get; set; }
+
+        [Column(TypeName = "decimal(10,2)")]
+        public decimal Descuento { get; set; } = 0;
+
+        public int? DescuentoAutorizadoId { get; set; }
+        public DescuentoAutorizado? DescuentoAutorizado { get; set; }
 
         public ICollection<DetalleVenta>? DetalleVentas { get; set; }
     }

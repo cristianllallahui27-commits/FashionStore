@@ -1,0 +1,1204 @@
+@{
+    ViewData["Title"] = "Configuración del Sistema";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<style>
+    .color-preview {
+        height: 60px;
+        border-radius: 8px;
+        border: 2px solid #e0e0e0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 12px;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+    }
+
+    .tema-btn {
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+        padding: 10px;
+        border-radius: 8px;
+    }
+
+    .tema-btn.active {
+        border-color: #667eea;
+        background-color: rgba(102, 126, 234, 0.1);
+    }
+
+    .tema-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .imagen-preview {
+        max-width: 250px;
+        border-radius: 8px;
+        border: 2px solid #e0e0e0;
+        margin-top: 10px;
+    }
+
+    .alert-custom {
+        border-left: 4px solid #667eea;
+        background-color: rgba(102, 126, 234, 0.1);
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .tab-content {
+        padding-top: 20px;
+    }
+
+    .file-upload-area {
+        border: 2px dashed #667eea;
+        border-radius: 8px;
+        padding: 15px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .file-upload-area:hover {
+        background-color: rgba(102, 126, 234, 0.05);
+        border-color: #764ba2;
+    }
+
+    .spinner {
+        display: none;
+    }
+
+    .spinner.show {
+        display: inline-block;
+    }
+</style>
+
+<div class="container-fluid mt-3">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="fw-bold mb-1 text-primary"><i class="fas fa-cogs me-2"></i>Configuración del Sistema</h1>
+            <p class="text-muted mb-0 small">Administra la identidad de la marca, colores, datos del negocio y control de accesos de usuarios.</p>
+        </div>
+        <a href="/Home/Index" class="btn btn-outline-secondary shadow-sm btn-sm">
+            <i class="fas fa-home me-1"></i>Volver a Inicio
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card border-0 shadow-sm rounded-3">
+                <div class="card-header bg-primary text-white py-3">
+                    <h5 class="card-title mb-0 fw-bold">
+                        <i class="fas fa-sliders-h me-2"></i>Panel de Configuración General
+                    </h5>
+                </div>
+
+                <div class="card-body p-4">
+
+                <!-- INFORMACIÓN IMPORTANTE -->
+                <div class="alert alert-custom alert-info mb-4">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Nota:</strong> Los cambios se reflejarán automáticamente en toda la aplicación.
+                    Las imágenes deben ser en formato JPG, PNG o WEBP (máximo 5MB).
+                </div>
+
+                <!-- NAV TABS -->
+                <ul class="nav nav-tabs" id="configTabs" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="branding-tab" data-bs-toggle="tab" href="#branding">
+                            <i class="fas fa-store me-2"></i>Branding
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="temas-tab" data-bs-toggle="tab" href="#temas">
+                            <i class="fas fa-palette me-2"></i>Temas
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="colores-tab" data-bs-toggle="tab" href="#colores">
+                            <i class="fas fa-paint-brush me-2"></i>Colores Personalizados
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="fondos-tab" data-bs-toggle="tab" href="#fondos">
+                            <i class="fas fa-image me-2"></i>Fondos e Imágenes
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="negocio-tab" data-bs-toggle="tab" href="#negocio">
+                            <i class="fas fa-briefcase me-2"></i>Datos del Negocio
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="redes-tab" data-bs-toggle="tab" href="#redes">
+                            <i class="fas fa-share-alt me-2"></i>Redes Sociales
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="usuarios-tab" data-bs-toggle="tab" href="#usuarios">
+                            <i class="fas fa-users-cog me-2"></i>Usuarios y Accesos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="descuentos-tab" data-bs-toggle="tab" href="#descuentos">
+                            <i class="fas fa-tags me-2"></i>Descuentos
+                        </a>
+                    </li>
+                </ul>
+
+                <!-- TAB CONTENT -->
+                <div class="tab-content" id="configTabsContent">
+
+                    <!-- BRANDING TAB -->
+                    <div class="tab-pane fade show active" id="branding" role="tabpanel">
+                        <div class="pt-3">
+
+                            <!-- Nombre de la Tienda -->
+                            <div class="mb-4">
+                                <label for="nombreTienda" class="form-label fw-bold">
+                                    <i class="fas fa-store me-2"></i>Nombre de la Tienda
+                                </label>
+                                <input type="text" class="form-control form-control-lg" id="nombreTienda" 
+                                       name="nombreTienda" placeholder="FashionStore" required>
+                            </div>
+
+                            <!-- Logo -->
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">
+                                    <i class="fas fa-image me-2"></i>Logo de la Tienda
+                                </label>
+                                <div class="file-upload-area" onclick="$('#logo').click()">
+                                    <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-2"></i>
+                                    <p>Haz clic para seleccionar el logo</p>
+                                    <small class="text-muted">JPG, PNG o WEBP (máx 5MB)</small>
+                                    <input type="file" id="logo" name="logo" accept="image/*" style="display: none;">
+                                </div>
+                                <div id="previewLogo" class="mt-3"></div>
+                            </div>
+
+                            <!-- Favicon -->
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">
+                                    <i class="fas fa-icons me-2"></i>Favicon (Icono del navegador)
+                                </label>
+                                <div class="file-upload-area" onclick="$('#favicon').click()">
+                                    <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-2"></i>
+                                    <p>Haz clic para seleccionar el favicon</p>
+                                    <small class="text-muted">JPG, PNG o WEBP (máx 5MB)</small>
+                                    <input type="file" id="favicon" name="favicon" accept="image/*" style="display: none;">
+                                </div>
+                                <div id="previewFavicon" class="mt-3"></div>
+                            </div>
+
+                            <!-- Imagen Institucional -->
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">
+                                    <i class="fas fa-building me-2"></i>Imagen Institucional
+                                </label>
+                                <div class="file-upload-area" onclick="$('#imagenInstitucional').click()">
+                                    <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-2"></i>
+                                    <p>Haz clic para seleccionar la imagen institucional</p>
+                                    <small class="text-muted">JPG, PNG o WEBP (máx 5MB)</small>
+                                    <input type="file" id="imagenInstitucional" name="imagenInstitucional" accept="image/*" style="display: none;">
+                                </div>
+                                <div id="previewImagenInstitucional" class="mt-3"></div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- TEMAS PREDEFINIDOS TAB -->
+                    <div class="tab-pane fade" id="temas" role="tabpanel">
+                        <div class="pt-3">
+                            <p class="text-muted mb-4">
+                                <i class="fas fa-info-circle me-2"></i>Selecciona un tema predefinido. 
+                                Puedes personalizar los colores después desde la pestaña "Colores Personalizados"
+                            </p>
+
+                            <div class="row g-3">
+                                <!-- Tema Fashion Store -->
+                                <div class="col-md-6 col-lg-4">
+                                    <div class="tema-btn card text-center" onclick="aplicarTema('Fashion Store', '#667eea', '#764ba2', '#2c3e50', '#667eea', '#ecf0f1', '#f5f7fa')">
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <div class="color-preview" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                                                    Fashion
+                                                </div>
+                                            </div>
+                                            <h6>Fashion Store</h6>
+                                            <small class="text-muted">Tema por defecto elegante</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Tema Claro -->
+                                <div class="col-md-6 col-lg-4">
+                                    <div class="tema-btn card text-center" onclick="aplicarTema('Claro', '#FFFFFF', '#F0F0F0', '#333333', '#0066CC', '#FFFFFF', '#F5F5F5')">
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <div class="color-preview" style="background: linear-gradient(135deg, #FFFFFF, #F0F0F0); border: 2px solid #999;">
+                                                    Claro
+                                                </div>
+                                            </div>
+                                            <h6>Tema Claro</h6>
+                                            <small class="text-muted">Limpio y minimalista</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Tema Oscuro -->
+                                <div class="col-md-6 col-lg-4">
+                                    <div class="tema-btn card text-center" onclick="aplicarTema('Oscuro', '#1A1A1A', '#2D2D2D', '#F0F0F0', '#00D4FF', '#333333', '#1A1A1A')">
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <div class="color-preview" style="background: linear-gradient(135deg, #1A1A1A, #2D2D2D); color: #00D4FF;">
+                                                    Oscuro
+                                                </div>
+                                            </div>
+                                            <h6>Tema Oscuro</h6>
+                                            <small class="text-muted">Para la noche</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Tema Navidad -->
+                                <div class="col-md-6 col-lg-4">
+                                    <div class="tema-btn card text-center" onclick="aplicarTema('Navidad', '#DC143C', '#228B22', '#FFD700', '#DC143C', '#FFFACD', '#F8F8FF')">
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <div class="color-preview" style="background: linear-gradient(135deg, #DC143C, #228B22); color: #FFD700;">
+                                                    🎄
+                                                </div>
+                                            </div>
+                                            <h6>Navidad</h6>
+                                            <small class="text-muted">Rojo y verde navideño</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Tema San Valentín -->
+                                <div class="col-md-6 col-lg-4">
+                                    <div class="tema-btn card text-center" onclick="aplicarTema('San Valentín', '#FF1493', '#FFB6C1', '#FFFFFF', '#FF1493', '#FFE4E1', '#FFF5F7')">
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <div class="color-preview" style="background: linear-gradient(135deg, #FF1493, #FFB6C1);">
+                                                    💝
+                                                </div>
+                                            </div>
+                                            <h6>San Valentín</h6>
+                                            <small class="text-muted">Rosa y rojo del amor</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Tema Black Friday -->
+                                <div class="col-md-6 col-lg-4">
+                                    <div class="tema-btn card text-center" onclick="aplicarTema('Black Friday', '#000000', '#333333', '#FFFF00', '#FF6600', '#111111', '#1A1A1A')">
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <div class="color-preview" style="background: linear-gradient(135deg, #000000, #333333); color: #FFFF00;">
+                                                    🔥
+                                                </div>
+                                            </div>
+                                            <h6>Black Friday</h6>
+                                            <small class="text-muted">Negro con destacados</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Tema Cyber Days -->
+                                <div class="col-md-6 col-lg-4">
+                                    <div class="tema-btn card text-center" onclick="aplicarTema('Cyber Days', '#00D4FF', '#0099FF', '#000033', '#FF00FF', '#001A4D', '#0D0D2B')">
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <div class="color-preview" style="background: linear-gradient(135deg, #00D4FF, #0099FF); color: #FF00FF;">
+                                                    💻
+                                                </div>
+                                            </div>
+                                            <h6>Cyber Days</h6>
+                                            <small class="text-muted">Azul y magenta futurista</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Tema Primavera -->
+                                <div class="col-md-6 col-lg-4">
+                                    <div class="tema-btn card text-center" onclick="aplicarTema('Primavera', '#00AA44', '#88DD99', '#FFFFFF', '#00AA44', '#F0FFF0', '#E8F8F0')">
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <div class="color-preview" style="background: linear-gradient(135deg, #00AA44, #88DD99);">
+                                                    🌸
+                                                </div>
+                                            </div>
+                                            <h6>Primavera</h6>
+                                            <small class="text-muted">Verde fresco y natural</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Tema Escolar -->
+                                <div class="col-md-6 col-lg-4">
+                                    <div class="tema-btn card text-center" onclick="aplicarTema('Escolar', '#003366', '#FF9900', '#FFFFFF', '#003366', '#E8F4F8', '#F5F5F5')">
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <div class="color-preview" style="background: linear-gradient(135deg, #003366, #FF9900);">
+                                                    📚
+                                                </div>
+                                            </div>
+                                            <h6>Escolar</h6>
+                                            <small class="text-muted">Azul y naranja educativo</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Tema Fiestas Patrias -->
+                                <div class="col-md-6 col-lg-4">
+                                    <div class="tema-btn card text-center" onclick="aplicarTema('Fiestas Patrias', '#CE1126', '#FFFFFF', '#003366', '#FFB81C', '#F0F0F0', '#FFFFFF')">
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <div class="color-preview" style="background: linear-gradient(135deg, #CE1126, #003366);">
+                                                    🇵🇪
+                                                </div>
+                                            </div>
+                                            <h6>Fiestas Patrias</h6>
+                                            <small class="text-muted">Rojo, blanco y azul</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- COLORES PERSONALIZADOS TAB -->
+                    <div class="tab-pane fade" id="colores" role="tabpanel">
+                        <div class="pt-3">
+                            <p class="text-muted mb-4">
+                                <i class="fas fa-info-circle me-2"></i>Personaliza los colores según tus preferencias
+                            </p>
+
+                            <div class="row">
+                                <!-- Color Primario -->
+                                <div class="col-md-6 mb-4">
+                                    <label for="colorPrimario" class="form-label fw-bold">
+                                        <i class="fas fa-palette me-2"></i>Color Primario
+                                    </label>
+                                    <div class="input-group">
+                                        <input type="color" class="form-control form-control-color color-input" 
+                                               id="colorPrimario" name="colorPrimario" value="#667eea" style="width: 80px;" data-preview="previewPrimario">
+                                        <input type="text" class="form-control color-hex" id="colorPrimarioHex" 
+                                               readonly value="#667eea">
+                                    </div>
+                                    <div id="previewPrimario" class="color-preview mt-2" style="background-color: #667eea;"></div>
+                                </div>
+
+                                <!-- Color Secundario -->
+                                <div class="col-md-6 mb-4">
+                                    <label for="colorSecundario" class="form-label fw-bold">
+                                        <i class="fas fa-palette me-2"></i>Color Secundario
+                                    </label>
+                                    <div class="input-group">
+                                        <input type="color" class="form-control form-control-color color-input" 
+                                               id="colorSecundario" name="colorSecundario" value="#764ba2" style="width: 80px;" data-preview="previewSecundario">
+                                        <input type="text" class="form-control color-hex" id="colorSecundarioHex" 
+                                               readonly value="#764ba2">
+                                    </div>
+                                    <div id="previewSecundario" class="color-preview mt-2" style="background-color: #764ba2;"></div>
+                                </div>
+
+                                <!-- Color Menú -->
+                                <div class="col-md-6 mb-4">
+                                    <label for="colorMenu" class="form-label fw-bold">
+                                        <i class="fas fa-bars me-2"></i>Color del Menú
+                                    </label>
+                                    <div class="input-group">
+                                        <input type="color" class="form-control form-control-color color-input" 
+                                               id="colorMenu" name="colorMenu" value="#2c3e50" style="width: 80px;" data-preview="previewMenu">
+                                        <input type="text" class="form-control color-hex" id="colorMenuHex" 
+                                               readonly value="#2c3e50">
+                                    </div>
+                                    <div id="previewMenu" class="color-preview mt-2" style="background-color: #2c3e50;"></div>
+                                </div>
+
+                                <!-- Color Botones -->
+                                <div class="col-md-6 mb-4">
+                                    <label for="colorBotones" class="form-label fw-bold">
+                                        <i class="fas fa-mouse me-2"></i>Color de Botones
+                                    </label>
+                                    <div class="input-group">
+                                        <input type="color" class="form-control form-control-color color-input" 
+                                               id="colorBotones" name="colorBotones" value="#667eea" style="width: 80px;" data-preview="previewBotones">
+                                        <input type="text" class="form-control color-hex" id="colorBotonesHex" 
+                                               readonly value="#667eea">
+                                    </div>
+                                    <div id="previewBotones" class="color-preview mt-2" style="background-color: #667eea;"></div>
+                                </div>
+
+                                <!-- Color Dashboard -->
+                                <div class="col-md-6 mb-4">
+                                    <label for="colorDashboard" class="form-label fw-bold">
+                                        <i class="fas fa-chart-line me-2"></i>Color del Dashboard
+                                    </label>
+                                    <div class="input-group">
+                                        <input type="color" class="form-control form-control-color color-input" 
+                                               id="colorDashboard" name="colorDashboard" value="#ecf0f1" style="width: 80px;" data-preview="previewDashboard">
+                                        <input type="text" class="form-control color-hex" id="colorDashboardHex" 
+                                               readonly value="#ecf0f1">
+                                    </div>
+                                    <div id="previewDashboard" class="color-preview mt-2" style="background-color: #ecf0f1;"></div>
+                                </div>
+
+                                <!-- Color Fondo General -->
+                                <div class="col-md-6 mb-4">
+                                    <label for="colorFondo" class="form-label fw-bold">
+                                        <i class="fas fa-paint-roller me-2"></i>Color de Fondo General
+                                    </label>
+                                    <div class="input-group">
+                                        <input type="color" class="form-control form-control-color color-input" 
+                                               id="colorFondo" name="colorFondo" value="#f5f7fa" style="width: 80px;" data-preview="previewFondo">
+                                        <input type="text" class="form-control color-hex" id="colorFondoHex" 
+                                               readonly value="#f5f7fa">
+                                    </div>
+                                    <div id="previewFondo" class="color-preview mt-2" style="background-color: #f5f7fa; border: 2px solid #999;"></div>
+                                </div>
+
+                                <!-- Tema Oscuro -->
+                                <div class="col-md-6 mb-4">
+                                    <label for="temaOscuro" class="form-label fw-bold">
+                                        <i class="fas fa-moon me-2"></i>Modo Oscuro
+                                    </label>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="temaOscuro" 
+                                               name="temaOscuro" style="width: 50px; height: 25px;">
+                                        <label class="form-check-label" for="temaOscuro">
+                                            <span id="temaOscuroLabel">Desactivado</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FONDOS E IMÁGENES TAB -->
+                    <div class="tab-pane fade" id="fondos" role="tabpanel">
+                        <div class="pt-3">
+
+                            <!-- Fondo Login -->
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">
+                                    <i class="fas fa-sign-in-alt me-2"></i>Fondo del Login
+                                </label>
+                                <div class="file-upload-area" onclick="$('#fondoLogin').click()">
+                                    <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-2"></i>
+                                    <p>Haz clic para seleccionar fondo del login</p>
+                                    <small class="text-muted">JPG, PNG o WEBP (máx 5MB)</small>
+                                    <input type="file" id="fondoLogin" name="fondoLogin" accept="image/*" style="display: none;">
+                                </div>
+                                <div id="previewFondoLogin" class="mt-3"></div>
+                            </div>
+
+                            <!-- Fondo Dashboard -->
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">
+                                    <i class="fas fa-chart-line me-2"></i>Fondo del Dashboard
+                                </label>
+                                <div class="file-upload-area" onclick="$('#fondoDashboard').click()">
+                                    <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-2"></i>
+                                    <p>Haz clic para seleccionar fondo del dashboard</p>
+                                    <small class="text-muted">JPG, PNG o WEBP (máx 5MB)</small>
+                                    <input type="file" id="fondoDashboard" name="fondoDashboard" accept="image/*" style="display: none;">
+                                </div>
+                                <div id="previewFondoDashboard" class="mt-3"></div>
+                            </div>
+
+                            <!-- Fondo Menú -->
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">
+                                    <i class="fas fa-bars me-2"></i>Fondo del Menú
+                                </label>
+                                <div class="file-upload-area" onclick="$('#fondoMenu').click()">
+                                    <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-2"></i>
+                                    <p>Haz clic para seleccionar fondo del menú</p>
+                                    <small class="text-muted">JPG, PNG o WEBP (máx 5MB)</small>
+                                    <input type="file" id="fondoMenu" name="fondoMenu" accept="image/*" style="display: none;">
+                                </div>
+                                <div id="previewFondoMenu" class="mt-3"></div>
+                            </div>
+
+                            <!-- Imagen del Login -->
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">
+                                    <i class="fas fa-image me-2"></i>Imagen del Login
+                                </label>
+                                <div class="file-upload-area" onclick="$('#imagenLogin').click()">
+                                    <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-2"></i>
+                                    <p>Haz clic para seleccionar imagen del login</p>
+                                    <small class="text-muted">JPG, PNG o WEBP (máx 5MB)</small>
+                                    <input type="file" id="imagenLogin" name="imagenLogin" accept="image/*" style="display: none;">
+                                </div>
+                                <div id="previewImagenLogin" class="mt-3"></div>
+                            </div>
+
+                            <!-- Banner Principal -->
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">
+                                    <i class="fas fa-flag me-2"></i>Banner Principal
+                                </label>
+                                <div class="file-upload-area" onclick="$('#banner').click()">
+                                    <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-2"></i>
+                                    <p>Haz clic para seleccionar banner principal</p>
+                                    <small class="text-muted">JPG, PNG o WEBP (máx 5MB)</small>
+                                    <input type="file" id="banner" name="banner" accept="image/*" style="display: none;">
+                                </div>
+                                <div id="previewBanner" class="mt-3"></div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- DATOS DEL NEGOCIO TAB -->
+                    <div class="tab-pane fade" id="negocio" role="tabpanel">
+                        <div class="pt-3">
+
+                            <div class="row">
+                                <!-- Propietario -->
+                                <div class="col-md-6 mb-4">
+                                    <label for="nombrePropietario" class="form-label fw-bold">
+                                        <i class="fas fa-user me-2"></i>Propietario/Negocio
+                                    </label>
+                                    <input type="text" class="form-control" id="nombrePropietario" 
+                                           name="nombrePropietario" placeholder="Juan García Pérez">
+                                </div>
+
+                                <!-- Teléfono -->
+                                <div class="col-md-6 mb-4">
+                                    <label for="telefono" class="form-label fw-bold">
+                                        <i class="fas fa-phone me-2"></i>Teléfono
+                                    </label>
+                                    <input type="tel" class="form-control" id="telefono" 
+                                           name="telefono" placeholder="+51 987 654 321">
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <!-- Correo -->
+                                <div class="col-md-6 mb-4">
+                                    <label for="correo" class="form-label fw-bold">
+                                        <i class="fas fa-envelope me-2"></i>Correo Electrónico
+                                    </label>
+                                    <input type="email" class="form-control" id="correo" 
+                                           name="correo" placeholder="info@fashionstore.com">
+                                </div>
+
+                                <!-- RUC -->
+                                <div class="col-md-6 mb-4">
+                                    <label for="ruc" class="form-label fw-bold">
+                                        <i class="fas fa-id-card me-2"></i>RUC
+                                    </label>
+                                    <input type="text" class="form-control" id="ruc" 
+                                           name="ruc" placeholder="12345678901">
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <!-- Dirección -->
+                                <div class="col-md-6 mb-4">
+                                    <label for="direccion" class="form-label fw-bold">
+                                        <i class="fas fa-map-pin me-2"></i>Dirección
+                                    </label>
+                                    <input type="text" class="form-control" id="direccion" 
+                                           name="direccion" placeholder="Av. Principal 123">
+                                </div>
+
+                                <!-- Ciudad -->
+                                <div class="col-md-6 mb-4">
+                                    <label for="ciudad" class="form-label fw-bold">
+                                        <i class="fas fa-city me-2"></i>Ciudad
+                                    </label>
+                                    <input type="text" class="form-control" id="ciudad" 
+                                           name="ciudad" placeholder="Lima">
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <!-- País -->
+                                <div class="col-md-6 mb-4">
+                                    <label for="pais" class="form-label fw-bold">
+                                        <i class="fas fa-globe me-2"></i>País
+                                    </label>
+                                    <input type="text" class="form-control" id="pais" 
+                                           name="pais" placeholder="Perú">
+                                </div>
+
+                                <!-- Código Postal -->
+                                <div class="col-md-6 mb-4">
+                                    <label for="codigoPostal" class="form-label fw-bold">
+                                        <i class="fas fa-mailbox me-2"></i>Código Postal
+                                    </label>
+                                    <input type="text" class="form-control" id="codigoPostal" 
+                                           name="codigoPostal" placeholder="15001">
+                                </div>
+                            </div>
+
+                            <!-- Descripción -->
+                            <div class="mb-4">
+                                <label for="descripcion" class="form-label fw-bold">
+                                    <i class="fas fa-align-left me-2"></i>Descripción del Negocio
+                                </label>
+                                <textarea class="form-control" id="descripcion" name="descripcion" 
+                                          rows="4" placeholder="Somos una tienda de ropa moderna especializada en..."></textarea>
+                            </div>
+
+                            <!-- Pie de Página -->
+                            <div class="mb-4">
+                                <label for="textoPiePagina" class="form-label fw-bold">
+                                    <i class="fas fa-info-circle me-2"></i>Texto del Pie de Página
+                                </label>
+                                <textarea class="form-control" id="textoPiePagina" name="textoPiePagina" 
+                                          rows="3" placeholder="&copy; 2025 FashionStore. Todos los derechos reservados."></textarea>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- REDES SOCIALES TAB -->
+                    <div class="tab-pane fade" id="redes" role="tabpanel">
+                        <div class="pt-3">
+
+                            <div class="row">
+                                <!-- Facebook -->
+                                <div class="col-md-6 mb-4">
+                                    <label for="facebookUrl" class="form-label fw-bold">
+                                        <i class="fab fa-facebook me-2"></i>Facebook
+                                    </label>
+                                    <input type="url" class="form-control" id="facebookUrl" 
+                                           name="facebookUrl" placeholder="https://facebook.com/fashionstore">
+                                </div>
+
+                                <!-- Instagram -->
+                                <div class="col-md-6 mb-4">
+                                    <label for="instagramUrl" class="form-label fw-bold">
+                                        <i class="fab fa-instagram me-2"></i>Instagram
+                                    </label>
+                                    <input type="url" class="form-control" id="instagramUrl" 
+                                           name="instagramUrl" placeholder="https://instagram.com/fashionstore">
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <!-- Twitter -->
+                                <div class="col-md-6 mb-4">
+                                    <label for="twitterUrl" class="form-label fw-bold">
+                                        <i class="fab fa-twitter me-2"></i>Twitter
+                                    </label>
+                                    <input type="url" class="form-control" id="twitterUrl" 
+                                           name="twitterUrl" placeholder="https://twitter.com/fashionstore">
+                                </div>
+
+                                <!-- LinkedIn -->
+                                <div class="col-md-6 mb-4">
+                                    <label for="linkedinUrl" class="form-label fw-bold">
+                                        <i class="fab fa-linkedin me-2"></i>LinkedIn
+                                    </label>
+                                    <input type="url" class="form-control" id="linkedinUrl" 
+                                           name="linkedinUrl" placeholder="https://linkedin.com/company/fashionstore">
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <!-- TikTok -->
+                                <div class="col-md-6 mb-4">
+                                    <label for="tiktokUrl" class="form-label fw-bold">
+                                        <i class="fab fa-tiktok me-2"></i>TikTok
+                                    </label>
+                                    <input type="url" class="form-control" id="tiktokUrl" 
+                                           name="tiktokUrl" placeholder="https://tiktok.com/store">
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- USUARIOS Y ACCESOS TAB -->
+                    <div class="tab-pane fade" id="usuarios" role="tabpanel">
+                        <div class="pt-3">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h5 class="fw-bold mb-0 text-primary">
+                                    <i class="fas fa-user-shield me-2"></i>Usuarios y Accesos del Sistema
+                                </h5>
+                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalCrearUsuario">
+                                    <i class="fas fa-user-plus me-1"></i>Crear Nuevo Usuario
+                                </button>
+                            </div>
+
+                            @if (TempData["Success"] != null)
+                            {
+                                <div class="alert alert-success alert-dismissible fade show rounded-3">
+                                    <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            }
+                            @if (TempData["Error"] != null)
+                            {
+                                <div class="alert alert-danger alert-dismissible fade show rounded-3">
+                                    <i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            }
+
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th>Usuario / Email</th>
+                                            <th>Rol</th>
+                                            <th class="text-center">Estado</th>
+                                            <th class="text-end">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (ViewBag.Usuarios != null)
+                                        {
+                                            foreach (var user in ViewBag.Usuarios)
+                                            {
+                                                <tr>
+                                                    <td class="fw-semibold">
+                                                        <i class="fas fa-envelope text-muted me-2"></i>@user.Email
+                                                    </td>
+                                                    <td>
+                                                        @if (user.Rol == "Administrador")
+                                                        {
+                                                            <span class="badge bg-danger"><i class="fas fa-shield-alt me-1"></i>Administrador</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="badge bg-success"><i class="fas fa-user-tag me-1"></i>Vendedor</span>
+                                                        }
+                                                    </td>
+                                                    <td class="text-center">
+                                                        @if (user.Activo)
+                                                        {
+                                                            <span class="badge bg-success px-2.5 py-1">Activo</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="badge bg-secondary px-2.5 py-1">Inactivo</span>
+                                                        }
+                                                    </td>
+                                                    <td class="text-end">
+                                                        <form action="/Configuracion/ToggleUsuario" method="post" class="d-inline">
+                                                            @Html.AntiForgeryToken()
+                                                            <input type="hidden" name="id" value="@user.Id" />
+                                                            <button type="submit" class="btn btn-sm @(user.Activo ? "btn-outline-danger" : "btn-outline-success")">
+                                                                <i class="fas @(user.Activo ? "fa-user-slash" : "fa-user-check") me-1"></i>
+                                                                @(user.Activo ? "Desactivar" : "Activar")
+                                                            </button>
+                                                        </form>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- DESCUENTOS TAB -->
+                    <div class="tab-pane fade" id="descuentos" role="tabpanel">
+                        <div class="pt-3">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="fw-bold mb-0 text-dark"><i class="fas fa-tags text-primary me-2"></i>Descuentos Autorizados</h5>
+                                <a href="/Descuentos/Create" class="btn btn-primary btn-sm shadow-sm">
+                                    <i class="fas fa-plus me-1"></i>Nuevo Descuento
+                                </a>
+                            </div>
+                            
+                            <div class="table-responsive">
+                                <table class="table table-hover border align-middle">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Nombre</th>
+                                            <th>Tipo</th>
+                                            <th>Valor</th>
+                                            <th>Estado</th>
+                                            <th class="text-end">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (ViewBag.Descuentos != null)
+                                        {
+                                            foreach (var desc in ViewBag.Descuentos)
+                                            {
+                                                <tr>
+                                                    <td class="fw-bold">@desc.Nombre</td>
+                                                    <td>
+                                                        @if (desc.Tipo == FashionStore.Domain.Entities.TipoDescuento.Porcentaje)
+                                                        {
+                                                            <span class="badge bg-info">Porcentaje</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="badge bg-secondary">Soles</span>
+                                                        }
+                                                    </td>
+                                                    <td>
+                                                        @if (desc.Tipo == FashionStore.Domain.Entities.TipoDescuento.Porcentaje)
+                                                        {
+                                                            <span>@desc.Valor %</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span>S/ @desc.Valor.ToString("0.00")</span>
+                                                        }
+                                                    </td>
+                                                    <td>
+                                                        @if (desc.Activo)
+                                                        {
+                                                            <span class="badge bg-success">Activo</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="badge bg-danger">Inactivo</span>
+                                                        }
+                                                    </td>
+                                                    <td class="text-end">
+                                                        <a href="/Descuentos/Edit/@desc.Id" class="btn btn-sm btn-outline-primary me-1">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td colspan="5" class="text-center text-muted py-4">No hay descuentos configurados.</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="card-footer">
+                <button type="button" class="btn btn-primary btn-lg" onclick="guardarConfiguracion()">
+                    <i class="fas fa-save me-2"></i>Guardar Configuración
+                </button>
+                <button type="button" class="btn btn-warning btn-lg ms-2" onclick="restablecerConfiguracion()">
+                    <i class="fas fa-redo me-2"></i>Restablecer Valores Predeterminados
+                </button>
+                <button type="button" class="btn btn-secondary btn-lg ms-2" onclick="recargarConfiguracion()">
+                    <i class="fas fa-sync-alt me-2"></i>Recargar
+                </button>
+                <span id="loadingSpinner" class="spinner ms-3">
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    Procesando...
+                </span>
+            </div>
+
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- Modal Crear Usuario -->
+<div class="modal fade" id="modalCrearUsuario" tabindex="-1" aria-labelledby="modalCrearUsuarioLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header bg-primary text-white p-3">
+                <h5 class="modal-title fw-bold" id="modalCrearUsuarioLabel">
+                    <i class="fas fa-user-plus me-2"></i>Crear Nuevo Usuario
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="/Configuracion/CrearUsuario" method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label for="newUserEmail" class="form-label fw-semibold small mb-1">Correo Electrónico / Usuario *</label>
+                        <input type="email" class="form-control form-control-sm bg-light border-0" id="newUserEmail" name="Email" required placeholder="Ej. usuario@correo.com">
+                    </div>
+                    <div class="mb-3">
+                        <label for="newUserPassword" class="form-label fw-semibold small mb-1">Contraseña Inicial *</label>
+                        <input type="password" class="form-control form-control-sm bg-light border-0" id="newUserPassword" name="Password" required minlength="6" placeholder="Mínimo 6 caracteres">
+                    </div>
+                    <div class="mb-3">
+                        <label for="newUserRol" class="form-label fw-semibold small mb-1">Rol *</label>
+                        <select class="form-select form-select-sm bg-light border-0" id="newUserRol" name="Rol" required>
+                            <option value="Vendedor" selected>Vendedor</option>
+                            <option value="Administrador">Administrador</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer p-3 bg-light">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary btn-sm fw-bold px-3">
+                        <i class="fas fa-save me-1"></i>Crear Usuario
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        $(document).ready(function () {
+            recargarConfiguracion();
+
+            // Evitar propagación en inputs de archivo para prevenir bucle infinito/stack overflow
+            $('input[type="file"]').on('click', function (e) {
+                e.stopPropagation();
+            });
+
+            // Eventos de cambio de color
+            $('.color-input').on('change', function () {
+                const previewId = $(this).data('preview');
+                const color = this.value;
+                $('#' + previewId).css('background-color', color);
+                $(this).siblings('.color-hex').val(color);
+            });
+
+            // Toggle tema oscuro
+            $('#temaOscuro').on('change', function () {
+                const label = $(this).is(':checked') ? 'Activado' : 'Desactivado';
+                $('#temaOscuroLabel').text(label);
+            });
+
+            // Carga de archivos
+            $('#logo').on('change', function () { cargarImagen('logo', this); });
+            $('#favicon').on('change', function () { cargarImagen('favicon', this); });
+            $('#imagenInstitucional').on('change', function () { cargarImagen('imagen_institucional', this); });
+            $('#fondoLogin').on('change', function () { cargarImagen('fondo_login', this); });
+            $('#fondoDashboard').on('change', function () { cargarImagen('fondo_dashboard', this); });
+            $('#fondoMenu').on('change', function () { cargarImagen('fondo_menu', this); });
+            $('#imagenLogin').on('change', function () { cargarImagen('imagen_login', this); });
+            $('#banner').on('change', function () { cargarImagen('banner', this); });
+        });
+
+        function recargarConfiguracion() {
+            $.ajax({
+                url: '/api/configuracion/obtener',
+                type: 'GET',
+                dataType: 'json',
+                success: function (response) {
+                    if (response.success && response.data) {
+                        const config = response.data;
+
+                        // Llenar formulario
+                        $('#nombreTienda').val(config.nombreTienda || 'FashionStore');
+                        $('#colorPrimario').val(config.colorPrimario || '#667eea').trigger('change');
+                        $('#colorSecundario').val(config.colorSecundario || '#764ba2').trigger('change');
+                        $('#colorMenu').val(config.colorMenu || '#2c3e50').trigger('change');
+                        $('#colorBotones').val(config.colorBotones || '#667eea').trigger('change');
+                        $('#colorDashboard').val(config.colorDashboard || '#ecf0f1').trigger('change');
+                        $('#colorFondo').val(config.colorFondo || '#f5f7fa').trigger('change');
+                        $('#temaOscuro').prop('checked', config.temaOscuro).trigger('change');
+                        $('#nombrePropietario').val(config.nombrePropietario || '');
+                        $('#telefono').val(config.telefono || '');
+                        $('#correo').val(config.correo || '');
+                        $('#direccion').val(config.direccion || '');
+                        $('#ciudad').val(config.ciudad || '');
+                        $('#pais').val(config.pais || '');
+                        $('#codigoPostal').val(config.codigoPostal || '');
+                        $('#ruc').val(config.ruc || '');
+                        $('#descripcion').val(config.descripcion || '');
+                        $('#textoPiePagina').val(config.textoPiePagina || '');
+                        $('#facebookUrl').val(config.facebookUrl || '');
+                        $('#instagramUrl').val(config.instagramUrl || '');
+                        $('#twitterUrl').val(config.twitterUrl || '');
+                        $('#linkedinUrl').val(config.linkedinUrl || '');
+                        $('#tiktokUrl').val(config.tiktokUrl || '');
+
+                        // Vista previa de imágenes
+                        if (config.rutaLogo) $('#previewLogo').html(`<img src="${config.rutaLogo}" class="imagen-preview">`);
+                        if (config.rutaFavicon) $('#previewFavicon').html(`<img src="${config.rutaFavicon}" class="imagen-preview">`);
+                        if (config.rutaImagenInstitucional) $('#previewImagenInstitucional').html(`<img src="${config.rutaImagenInstitucional}" class="imagen-preview">`);
+                        if (config.rutaFondoLogin) $('#previewFondoLogin').html(`<img src="${config.rutaFondoLogin}" class="imagen-preview">`);
+                        if (config.rutaFondoDashboard) $('#previewFondoDashboard').html(`<img src="${config.rutaFondoDashboard}" class="imagen-preview">`);
+                        if (config.rutaFondoMenu) $('#previewFondoMenu').html(`<img src="${config.rutaFondoMenu}" class="imagen-preview">`);
+                        if (config.rutaImagenLogin) $('#previewImagenLogin').html(`<img src="${config.rutaImagenLogin}" class="imagen-preview">`);
+                        if (config.rutaBanner) $('#previewBanner').html(`<img src="${config.rutaBanner}" class="imagen-preview">`);
+                    }
+                },
+                error: function () {
+                    toastr.error('Error al cargar la configuración');
+                }
+            });
+        }
+
+            function cargarImagen(campo, elemento) {
+                const archivo = elemento.files[0];
+
+                if (!archivo) return;
+
+                const formData = new FormData();
+                formData.append('archivo', archivo);
+                formData.append('campo', campo);
+
+                mostrarCargando(true);
+
+                $.ajax({
+                    url: '/api/configuracion/cargar-imagen',
+                    type: 'POST',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function (response) {
+                        if (response.success) {
+                            toastr.success(response.message);
+                            const preview = `<img src="${response.ruta}" class="imagen-preview">`;
+
+                            const mapPreviews = {
+                                'logo': '#previewLogo',
+                                'favicon': '#previewFavicon',
+                                'imagen_institucional': '#previewImagenInstitucional',
+                                'fondo_login': '#previewFondoLogin',
+                                'fondo_dashboard': '#previewFondoDashboard',
+                                'fondo_menu': '#previewFondoMenu',
+                                'imagen_login': '#previewImagenLogin',
+                                'banner': '#previewBanner'
+                            };
+
+                            if (mapPreviews[campo]) {
+                                $(mapPreviews[campo]).html(preview);
+                            }
+
+                            recargarConfiguracion();
+                        }
+                        mostrarCargando(false);
+                    },
+                    error: function (xhr) {
+                        const response = xhr.responseJSON;
+                        toastr.error(response?.message || 'Error al cargar la imagen');
+                        mostrarCargando(false);
+                    }
+                });
+            }
+
+        function aplicarTema(nombreTema, primario, secundario, menu, botones, dashboard, fondo) {
+            $('#colorPrimario').val(primario).trigger('change');
+            $('#colorSecundario').val(secundario).trigger('change');
+            $('#colorMenu').val(menu).trigger('change');
+            $('#colorBotones').val(botones).trigger('change');
+            $('#colorDashboard').val(dashboard).trigger('change');
+            $('#colorFondo').val(fondo).trigger('change');
+
+            toastr.success(`Tema "${nombreTema}" aplicado. Ahora guarda los cambios.`);
+
+            // Marcar como activo
+            $('.tema-btn').removeClass('active');
+            event.currentTarget.closest('.tema-btn').classList.add('active');
+        }
+
+        function guardarConfiguracion() {
+            const configuracion = {
+                id: 1,
+                nombreTienda: $('#nombreTienda').val(),
+                colorPrimario: $('#colorPrimario').val(),
+                colorSecundario: $('#colorSecundario').val(),
+                colorMenu: $('#colorMenu').val(),
+                colorBotones: $('#colorBotones').val(),
+                colorDashboard: $('#colorDashboard').val(),
+                colorFondo: $('#colorFondo').val(),
+                temaSeleccionado: 'Personalizado',
+                temaOscuro: $('#temaOscuro').is(':checked'),
+                nombrePropietario: $('#nombrePropietario').val(),
+                telefono: $('#telefono').val(),
+                correo: $('#correo').val(),
+                direccion: $('#direccion').val(),
+                ciudad: $('#ciudad').val(),
+                pais: $('#pais').val(),
+                codigoPostal: $('#codigoPostal').val(),
+                ruc: $('#ruc').val(),
+                descripcion: $('#descripcion').val(),
+                textoPiePagina: $('#textoPiePagina').val(),
+                facebookUrl: $('#facebookUrl').val(),
+                instagramUrl: $('#instagramUrl').val(),
+                twitterUrl: $('#twitterUrl').val(),
+                linkedInUrl: $('#linkedinUrl').val(),
+                tikTokUrl: $('#tiktokUrl').val()
+            };
+
+            mostrarCargando(true);
+
+            $.ajax({
+                url: '/api/configuracion/actualizar',
+                type: 'POST',
+                data: JSON.stringify(configuracion),
+                contentType: 'application/json',
+                dataType: 'json',
+                success: function (response) {
+                    if (response.success) {
+                        toastr.success(response.message);
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1500);
+                    }
+                    mostrarCargando(false);
+                },
+                error: function () {
+                    toastr.error('Error al guardar la configuración');
+                    mostrarCargando(false);
+                }
+            });
+        }
+
+        function restablecerConfiguracion() {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: 'Se reestablecerán TODOS los valores a la configuración predeterminada. Esta acción no se puede deshacer.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#667eea',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, restablecer',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    mostrarCargando(true);
+
+                    $.ajax({
+                        url: '/api/configuracion/restablecer',
+                        type: 'POST',
+                        contentType: 'application/json',
+                        dataType: 'json',
+                        success: function (response) {
+                            if (response.success) {
+                                toastr.success(response.message);
+                                setTimeout(() => {
+                                    location.reload();
+                                }, 1500);
+                            }
+                            mostrarCargando(false);
+                        },
+                        error: function () {
+                            toastr.error('Error al restablecer la configuración');
+                            mostrarCargando(false);
+                        }
+                    });
+                }
+            });
+        }
+
+        function mostrarCargando(mostrar) {
+            if (mostrar) {
+                $('#loadingSpinner').addClass('show');
+            } else {
+                $('#loadingSpinner').removeClass('show');
+            }
+        }
+    </script>
+}

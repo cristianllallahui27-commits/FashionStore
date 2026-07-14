@@ -1,0 +1,222 @@
+@model FashionStore.Web.ViewModels.VentaDetalleViewModel
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Ticket Venta #@Model.Id.ToString("D4")</title>
+    <style>
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 12px;
+            line-height: 1.4;
+            color: #000;
+            margin: 0;
+            padding: 10px;
+            max-width: 80mm; /* standard ticket width */
+            background: #fff;
+        }
+        .text-center {
+            text-align: center;
+        }
+        .text-right {
+            text-align: right;
+        }
+        .fw-bold {
+            font-weight: bold;
+        }
+        .divider {
+            border-top: 1px dashed #000;
+            margin: 8px 0;
+        }
+        .header {
+            margin-bottom: 12px;
+        }
+        .store-name {
+            font-size: 16px;
+            font-weight: bold;
+            margin: 0 0 4px 0;
+        }
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 8px;
+        }
+        .info-table td {
+            padding: 2px 0;
+            vertical-align: top;
+        }
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 5px;
+        }
+        .items-table th {
+            border-bottom: 1px solid #000;
+            text-align: left;
+            padding: 2px 0;
+            font-size: 11px;
+        }
+        .items-table td {
+            padding: 3px 0;
+            vertical-align: top;
+            font-size: 11px;
+        }
+        .totals-table {
+            width: 100%;
+            margin-top: 8px;
+        }
+        .totals-table td {
+            padding: 2px 0;
+        }
+        .footer {
+            margin-top: 20px;
+            font-size: 11px;
+        }
+        @@media print {
+            body {
+                padding: 0;
+                margin: 0;
+            }
+            .no-print {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Top toolbar for non-print view -->
+    <div class="no-print text-center" style="margin-bottom: 20px; padding: 5px; background: #f0f0f0; border-radius: 4px;">
+        <button onclick="window.print()" style="padding: 6px 12px; font-weight: bold; cursor: pointer;">Imprimir Ticket</button>
+        <button onclick="window.close()" style="padding: 6px 12px; margin-left: 10px; cursor: pointer;">Cerrar</button>
+    </div>
+
+    <!-- Ticket Brand Header -->
+    <div class="header text-center">
+        <div class="store-name">@Model.NombreTienda</div>
+        @if (!string.IsNullOrEmpty(Model.DireccionTienda))
+        {
+            <div>@Model.DireccionTienda</div>
+        }
+        @if (!string.IsNullOrEmpty(Model.TelefonoTienda))
+        {
+            <div>Telf: @Model.TelefonoTienda</div>
+        }
+        @if (!string.IsNullOrEmpty(Model.CorreoTienda))
+        {
+            <div>Email: @Model.CorreoTienda</div>
+        }
+        <div class="divider"></div>
+        <div class="fw-bold">TICKET DE COMPRA</div>
+        <div class="fw-bold">NRO: #@Model.Id.ToString("D4")</div>
+    </div>
+
+    <!-- Ticket Info Details -->
+    <table class="info-table">
+        <tr>
+            <td width="30%">Fecha:</td>
+            <td>@Model.Fecha.ToString("dd/MM/yyyy HH:mm")</td>
+        </tr>
+        <tr>
+            <td>Cliente:</td>
+            <td>@Model.ClienteNombre</td>
+        </tr>
+        <tr>
+            <td>DNI:</td>
+            <td>@Model.ClienteDNI</td>
+        </tr>
+        <tr>
+            <td>Cajero:</td>
+            <td>@Model.VendedorNombre</td>
+        </tr>
+        <tr>
+            <td>Pago:</td>
+            <td>@Model.MetodoPagoNombre</td>
+        </tr>
+    </table>
+
+    <div class="divider"></div>
+
+    <!-- Ticket Items -->
+    <table class="items-table">
+        <thead>
+            <tr>
+                <th width="50%">Prenda [T/C]</th>
+                <th class="text-center" width="15%">Cant.</th>
+                <th class="text-right" width="15%">P.U.</th>
+                <th class="text-right" width="20%">Subt.</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Detalles)
+            {
+                <tr>
+                    <td>
+                        @item.NombrePrenda
+                        <br><small style="font-size:9px;">@item.Talla / @item.Color</small>
+                    </td>
+                    <td class="text-center">@item.Cantidad</td>
+                    <td class="text-right">@item.PrecioUnitario.ToString("F2")</td>
+                    <td class="text-right">@item.Subtotal.ToString("F2")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="divider"></div>
+
+    <!-- Ticket Totals -->
+    <table class="totals-table">
+        <tr>
+            <td>Subtotal:</td>
+            <td class="text-right">S/. @Model.Subtotal.ToString("F2")</td>
+        </tr>
+        @if (Model.Descuento > 0)
+        {
+            <tr>
+                <td>Descuento@(!string.IsNullOrEmpty(Model.DescuentoNombre) ? $" ({Model.DescuentoNombre})" : ""):</td>
+                <td class="text-right">- S/. @Model.Descuento.ToString("F2")</td>
+            </tr>
+        }
+        <tr class="fw-bold" style="font-size: 14px;">
+            <td>TOTAL:</td>
+            <td class="text-right">S/. @Model.Total.ToString("F2")</td>
+        </tr>
+        @if (Model.EsEfectivo && Model.MontoRecibido.HasValue)
+        {
+            <tr class="divider">
+                <td colspan="2"></td>
+            </tr>
+            <tr>
+                <td>Recibido:</td>
+                <td class="text-right">S/. @Model.MontoRecibido.Value.ToString("F2")</td>
+            </tr>
+            <tr class="fw-bold">
+                <td>Vuelto:</td>
+                <td class="text-right">S/. @(Model.Vuelto?.ToString("F2") ?? "0.00")</td>
+            </tr>
+        }
+    </table>
+
+    <div class="divider"></div>
+
+    <!-- Ticket Footer -->
+    <div class="footer text-center">
+        <div>¡Gracias por su preferencia!</div>
+        <div>Vuelva pronto</div>
+    </div>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            // Auto open print dialog when loading
+            setTimeout(() => {
+                window.print();
+            }, 500);
+        });
+    </script>
+</body>
+</html>

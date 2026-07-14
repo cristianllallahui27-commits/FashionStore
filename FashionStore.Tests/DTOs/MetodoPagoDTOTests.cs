@@ -82,13 +82,13 @@ namespace FashionStore.Tests.DTOs
         #region Null Handling Tests
 
         [TestMethod]
-        public void MetodoPagoDTO_NombreCanBeNull()
+        public void MetodoPagoDTO_NombreCanBeEmpty()
         {
             // Arrange & Act
-            var metodoDTO = new MetodoPagoDTO { Nombre = null };
+            var metodoDTO = new MetodoPagoDTO { Nombre = string.Empty };
 
             // Assert
-            Assert.IsNull(metodoDTO.Nombre);
+            Assert.AreEqual(string.Empty, metodoDTO.Nombre);
         }
 
         #endregion

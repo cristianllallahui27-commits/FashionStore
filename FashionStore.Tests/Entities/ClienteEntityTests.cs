@@ -15,10 +15,11 @@ namespace FashionStore.Tests.Entities
 
             // Assert
             Assert.AreEqual(0, cliente.Id);
-            Assert.IsNull(cliente.NombreCompleto);
-            Assert.IsNull(cliente.DNI);
-            Assert.IsNull(cliente.Telefono);
-            Assert.IsNull(cliente.Direccion);
+            Assert.AreEqual(string.Empty, cliente.NombreCompleto);
+            Assert.AreEqual(string.Empty, cliente.DNI);
+            Assert.AreEqual(string.Empty, cliente.Telefono);
+            Assert.AreEqual(string.Empty, cliente.Direccion);
+            Assert.IsNull(cliente.Email);
         }
 
         [TestMethod]
@@ -157,22 +158,22 @@ namespace FashionStore.Tests.Entities
         }
 
         [TestMethod]
-        public void Cliente_AllPropertiesCanBeNull()
+        public void Cliente_AllPropertiesCanBeEmpty()
         {
             // Arrange & Act
             var cliente = new Cliente
             {
-                NombreCompleto = null,
-                DNI = null,
-                Telefono = null,
-                Direccion = null
+                NombreCompleto = string.Empty,
+                DNI = string.Empty,
+                Telefono = string.Empty,
+                Direccion = string.Empty
             };
 
             // Assert
-            Assert.IsNull(cliente.NombreCompleto);
-            Assert.IsNull(cliente.DNI);
-            Assert.IsNull(cliente.Telefono);
-            Assert.IsNull(cliente.Direccion);
+            Assert.AreEqual(string.Empty, cliente.NombreCompleto);
+            Assert.AreEqual(string.Empty, cliente.DNI);
+            Assert.AreEqual(string.Empty, cliente.Telefono);
+            Assert.AreEqual(string.Empty, cliente.Direccion);
         }
 
         #endregion

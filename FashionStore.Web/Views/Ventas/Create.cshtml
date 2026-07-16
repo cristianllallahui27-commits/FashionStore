@@ -24,45 +24,23 @@
             <div class="card border-0 shadow-sm mb-3">
                 <div class="card-body py-3">
                     <div class="row g-3">
-                        <!-- VENDEDOR: Mostrar select o display según auto-detección -->
-                        @if (Model.VendedorAutoDetectado)
-                        {
-                            <!-- Mostrar como display (readonly) -->
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold small mb-1">
-                                    <i class="fas fa-user-tie me-1 text-success"></i>Vendedor (Autenticado)
-                                </label>
-                                <div class="input-group input-group-sm">
-                                    <input type="text" class="form-control" value="@Model.VendedorLogueadoNombre" readonly style="background-color: #e8f5e9;">
-                                    <span class="input-group-text bg-success text-white">
-                                        <i class="fas fa-check-circle"></i>
-                                    </span>
-                                </div>
-                                <!-- Hidden input para enviar VendedorId -->
-                                <input type="hidden" id="vendedor" value="@Model.VendedorLogueadoId">
-                                <small class="text-success d-block mt-1">
-                                    <i class="fas fa-info-circle me-1"></i>Vendedor detectado automáticamente desde tu sesión
-                                </small>
+                        <!-- VENDEDOR: Mostrar SIEMPRE el vendedor autenticado -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small mb-1">
+                                <i class="fas fa-user-tie me-1 text-success"></i>Vendedor (Responsable)
+                            </label>
+                            <div class="input-group input-group-sm">
+                                <input type="text" class="form-control" value="@(Model.VendedorAutoDetectado ? Model.VendedorLogueadoNombre : "Vendedor Asignado")" readonly>
+                                <span class="input-group-text bg-success text-white">
+                                    <i class="fas fa-check-circle"></i>
+                                </span>
                             </div>
-                        }
-                        else
-                        {
-                            <!-- Mostrar select para elegir -->
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold small mb-1">
-                                    <i class="fas fa-user-tie me-1 text-primary"></i>Vendedor *
-                                </label>
-                                <select class="form-select form-select-sm" id="vendedor" required>
-                                    <option value="">-- Selecciona vendedor --</option>
-                                    @foreach (var item in Model.Vendedores)
-                                    {
-                                        <option value="@item.Value" selected="@(Model.VendedorPreseleccionadoId.HasValue && Model.VendedorPreseleccionadoId.Value.ToString() == item.Value)">
-                                            @item.Text
-                                        </option>
-                                    }
-                                </select>
-                            </div>
-                        }
+                            <!-- Hidden input para enviar VendedorId -->
+                            <input type="hidden" id="vendedor" value="@(Model.VendedorAutoDetectado ? Model.VendedorLogueadoId : Model.VendedorPreseleccionadoId)">
+                            <small class="text-success d-block mt-1">
+                                <i class="fas fa-lock me-1"></i>Asignado automáticamente desde tu sesión. Eres responsable de esta venta.
+                            </small>
+                        </div>
                         
                         <!-- CLIENTE -->
                         <div class="col-md-6">

@@ -221,6 +221,7 @@ main {
     font-size: 0.95rem;
     transition: var(--transition);
     background: white;
+    color: #2d3748 !important;
 }
 
 .form-control:focus,
@@ -237,9 +238,16 @@ main {
 
 label {
     font-weight: 600;
-    color: #2d3748;
+    color: #2d3748 !important;
     margin-bottom: 0.5rem;
     font-size: 0.95rem;
+}
+
+.form-control:read-only,
+.form-control[readonly] {
+    background-color: #f0f0f0 !important;
+    color: #2d3748 !important;
+    border-color: #cbd5e0 !important;
 }
 
 .form-group {

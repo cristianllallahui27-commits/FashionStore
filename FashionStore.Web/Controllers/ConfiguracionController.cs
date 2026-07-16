@@ -428,5 +428,35 @@ namespace FashionStore.Web.Controllers
                 return StatusCode(500, new { success = false, message = ex.Message });
             }
         }
+
+        /// <summary>
+        /// Guarda el tema seleccionado
+        /// </summary>
+        [HttpPost("guardar-tema")]
+        public async Task<IActionResult> GuardarTema([FromBody] dynamic request)
+        {
+            try
+            {
+                string tema = request?.tema;
+
+                if (string.IsNullOrWhiteSpace(tema))
+                    return BadRequest(new { success = false, message = "Tema inválido" });
+
+                var configuracion = await _configuracionService.ObtenerConfiguracionAsync();
+                configuracion.TemaSeleccionado = tema;
+
+                var (usuarioId, nombreUsuario) = ObtenerDatosUsuario();
+                await _configuracionService.ActualizarConfiguracionAsync(configuracion, usuarioId, nombreUsuario);
+
+                _logger.LogInformation("Tema guardado: {Tema} por usuario: {Usuario}", tema, nombreUsuario);
+
+                return Ok(new { success = true, message = "Tema guardado correctamente", tema = tema });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error al guardar tema: {ex.Message}");
+                return StatusCode(500, new { success = false, message = ex.Message });
+            }
+        }
     }
 }

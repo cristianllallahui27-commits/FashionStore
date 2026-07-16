@@ -34,6 +34,7 @@
     <!-- Custom site styles -->
     <link rel="stylesheet" href="~/css/site.css" />
     <link rel="stylesheet" href="~/css/dashboard.css" />
+    <link rel="stylesheet" href="~/css/temas.css" />
 
     @if (!string.IsNullOrEmpty(config.RutaFavicon))
     {
@@ -440,6 +441,9 @@
 
     <!-- Toastr -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+    <!-- Temas Manager -->
+    <script src="~/js/temas.js"></script>
 
     @RenderSection("Scripts", required: false)
 

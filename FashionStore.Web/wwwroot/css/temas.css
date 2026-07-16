@@ -1,0 +1,395 @@
+/* =============================================
+   TEMAS PERSONALIZABLES - FASHIONSTORE
+   ============================================= */
+
+/* TEMA PREDETERMINADO (Púrpura) */
+:root {
+    --primary-color: #667eea;
+    --secondary-color: #764ba2;
+    --text-primary: #2d3748;
+    --text-light: #a0aec0;
+    --text-white: #ffffff;
+    --bg-light: #f7fafc;
+}
+
+/* TEMA OSCURO */
+body.theme-dark {
+    --primary-color: #667eea;
+    --secondary-color: #764ba2;
+    --text-primary: #ffffff;
+    --text-light: #cbd5e0;
+    --text-white: #ffffff;
+    --bg-light: #1a202c;
+    background: linear-gradient(135deg, #1a202c, #2d3748) !important;
+}
+
+body.theme-dark .navbar {
+    background: linear-gradient(135deg, #0f1419, #1a202c) !important;
+}
+
+body.theme-dark .card {
+    background: #2d3748 !important;
+    color: #ffffff;
+}
+
+body.theme-dark .form-control,
+body.theme-dark .form-select {
+    background: #1a202c;
+    color: #ffffff;
+    border-color: #4a5568;
+}
+
+body.theme-dark .table {
+    background: #2d3748;
+    color: #ffffff;
+}
+
+body.theme-dark .table tbody td {
+    color: #ffffff;
+}
+
+body.theme-dark label {
+    color: #e2e8f0;
+}
+
+/* TEMA AZUL */
+body.theme-blue {
+    --primary-color: #3b82f6;
+    --secondary-color: #1e40af;
+    --text-primary: #1e3a8a;
+    --text-light: #60a5fa;
+    --text-white: #ffffff;
+    --bg-light: #eff6ff;
+}
+
+/* TEMA VERDE */
+body.theme-green {
+    --primary-color: #10b981;
+    --secondary-color: #059669;
+    --text-primary: #047857;
+    --text-light: #a7f3d0;
+    --text-white: #ffffff;
+    --bg-light: #f0fdf4;
+}
+
+/* TEMA NARANJA */
+body.theme-orange {
+    --primary-color: #f97316;
+    --secondary-color: #ea580c;
+    --text-primary: #c2410c;
+    --text-light: #fed7aa;
+    --text-white: #ffffff;
+    --bg-light: #fff7ed;
+}
+
+/* TEMA ROJO */
+body.theme-red {
+    --primary-color: #ef4444;
+    --secondary-color: #dc2626;
+    --text-primary: #991b1b;
+    --text-light: #fca5a5;
+    --text-white: #ffffff;
+    --bg-light: #fef2f2;
+}
+
+/* APLICAR COLORES A ELEMENTOS */
+
+body.theme-blue .navbar {
+    background: linear-gradient(135deg, #1e3a8a, #1e40af) !important;
+}
+
+body.theme-green .navbar {
+    background: linear-gradient(135deg, #047857, #059669) !important;
+}
+
+body.theme-orange .navbar {
+    background: linear-gradient(135deg, #b45309, #c2410c) !important;
+}
+
+body.theme-red .navbar {
+    background: linear-gradient(135deg, #7f1d1d, #991b1b) !important;
+}
+
+/* GARANTIZAR LETRAS VISIBLES */
+
+body.theme-dark h1,
+body.theme-dark h2,
+body.theme-dark h3,
+body.theme-dark h4,
+body.theme-dark h5,
+body.theme-dark h6,
+body.theme-dark label,
+body.theme-dark .text-muted,
+body.theme-dark .form-control::placeholder {
+    color: #ffffff !important;
+}
+
+body.theme-dark .nav-link {
+    color: #e2e8f0 !important;
+}
+
+body.theme-dark .nav-link:hover {
+    color: var(--primary-color) !important;
+}
+
+body.theme-dark .dropdown-item {
+    color: #cbd5e0;
+}
+
+body.theme-dark .dropdown-item:hover {
+    background: var(--primary-color) !important;
+    color: #ffffff !important;
+}
+
+/* BOTONES CON COLORES VARIABLES */
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%);
+    color: #ffffff;
+}
+
+/* CARDS CON COLORES VARIABLES */
+
+.card-header {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%) !important;
+    color: #ffffff !important;
+}
+
+.table thead th {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%) !important;
+    color: #ffffff !important;
+}
+
+/* BADGES */
+
+.badge-primary {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    color: #ffffff;
+}
+
+/* ALERTAS */
+
+.alert-primary {
+    background: rgba(102, 126, 234, 0.15) !important;
+    color: var(--primary-color) !important;
+    border-left: 4px solid var(--primary-color) !important;
+}
+
+/* PAGINATION */
+
+.page-link {
+    color: var(--primary-color) !important;
+}
+
+.page-link:hover {
+    background: var(--primary-color) !important;
+    color: #ffffff !important;
+}
+
+.page-item.active .page-link {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%) !important;
+    border-color: transparent;
+}
+
+/* INPUTS ENFOCADOS */
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--primary-color) !important;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25) !important;
+}
+
+/* SCROLLBAR PERSONALIZADA */
+
+::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--secondary-color);
+}
+
+/* GRADIENTE PRIMARIO */
+
+.gradient-primary {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+}
+
+/* TEXTO GRADIENTE */
+
+.gradient-text {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* GARANTIZAR LEGIBILIDAD EN TODOS LOS TEMAS */
+
+.navbar-brand {
+    color: #ffffff !important;
+}
+
+.navbar-brand:hover {
+    color: #ffffff !important;
+}
+
+.nav-link {
+    color: #cbd5e0 !important;
+}
+
+.nav-link:hover {
+    color: #ffffff !important;
+}
+
+a {
+    color: var(--primary-color);
+}
+
+a:hover {
+    color: var(--secondary-color);
+}
+
+/* TABLAS EN TEMA OSCURO */
+
+body.theme-dark .table-modern {
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+}
+
+body.theme-dark .table-modern th {
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+}
+
+body.theme-dark .table-modern td {
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* INPUTS EN TEMA OSCURO */
+
+body.theme-dark .form-control {
+    background: #1a202c;
+    color: #ffffff;
+    border-color: #4a5568;
+}
+
+body.theme-dark .form-control::placeholder {
+    color: #a0aec0;
+}
+
+body.theme-dark .form-select {
+    background: #1a202c;
+    color: #ffffff;
+    border-color: #4a5568;
+}
+
+body.theme-dark .input-group-text {
+    background: #2d3748;
+    border-color: #4a5568;
+    color: #a0aec0;
+}
+
+/* CARDS EN TEMA OSCURO */
+
+body.theme-dark .card-header {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%) !important;
+    color: #ffffff !important;
+}
+
+body.theme-dark .card-body {
+    background: #2d3748;
+    color: #ffffff;
+}
+
+body.theme-dark .card-footer {
+    background: #1a202c;
+    border-color: #4a5568;
+}
+
+/* ALERTS EN TEMA OSCURO */
+
+body.theme-dark .alert {
+    background: rgba(102, 126, 234, 0.15);
+    color: #a3bffa;
+    border-left-color: var(--primary-color);
+}
+
+/* MODALES EN TEMA OSCURO */
+
+body.theme-dark .modal-content {
+    background: #2d3748;
+    color: #ffffff;
+}
+
+body.theme-dark .modal-header {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    border-color: #4a5568;
+}
+
+body.theme-dark .modal-footer {
+    background: #1a202c;
+    border-color: #4a5568;
+}
+
+/* CHECKBOXES EN TEMA OSCURO */
+
+body.theme-dark .form-check-input {
+    background: #1a202c;
+    border-color: #4a5568;
+}
+
+body.theme-dark .form-check-input:checked {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+/* BADGES EN TEMA OSCURO */
+
+body.theme-dark .badge {
+    background: var(--primary-color);
+    color: #ffffff;
+}
+
+/* PAGINACIÓN EN TEMA OSCURO */
+
+body.theme-dark .pagination {
+    background: #2d3748;
+}
+
+body.theme-dark .page-link {
+    background: #1a202c;
+    color: var(--primary-color);
+    border-color: #4a5568;
+}
+
+body.theme-dark .page-link:hover {
+    background: var(--primary-color);
+    color: #ffffff;
+    border-color: var(--primary-color);
+}
+
+body.theme-dark .page-item.active .page-link {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    border-color: transparent;
+}
+
+/* TRANSICIONES SUAVES */
+
+body {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.card {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.navbar {
+    transition: background 0.3s ease;
+}
